@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jumby Attack Game</title>
+    <style>
+        /* Base Styles */
+        
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            background: linear-gradient(120deg, #020617, #08131f);
+            color: #0ff;
+            position: relative;
+        }
+        /* Animated Background */
+        
+        body::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1470&q=80') no-repeat center center/cover;
+            z-index: -1;
+            animation: bgMove 30s linear infinite;
+        }
+        
+        @keyframes bgMove {
+            0% {
+                transform: scale(1) translate(0, 0);
+            }
+            50% {
+                transform: scale(1.05) translate(50px, 30px);
+            }
+            100% {
+                transform: scale(1) translate(0, 0);
+            }
+        }
+        /* Canvas */
+        
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.2);
+            border: 3px solid #0ff;
+            border-radius: 15px;
+            box-shadow: 0 0 20px #0ff80f, inset 0 0 40px #0ff40f;
+        }
+        /* Score */
+        
+        .score {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 28px;
+            font-weight: 800;
+            text-shadow: 0 0 10px #0ff, 0 0 20px #0ff80f;
+        }
+        /* Game Over */
+        
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px;
+            font-weight: 900;
+            color: #ff0066;
+            text-shadow: 0 0 20px #ff0066, 0 0 40px #ff3399;
+            display: none;
+            animation: pulse 1s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        /* Buttons */
+        
+        .restart,
+        .back-btn,
+        .mode-buttons button {
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 4px #000;
+            box-shadow: 0 0 10px #0ff60f, inset 0 0 5px #00ff88;
+        }
+        
+        .restart,
+        .mode-buttons button {
+            background: linear-gradient(45deg, #00ffff, #00ccff);
+            color: #001f33;
+        }
+        
+        .restart:hover,
+        .mode-buttons button:hover {
+            background: linear-gradient(45deg, #00ff88, #00ffaa);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 0 25px #0ff, inset 0 0 10px #00ffaa;
+        }
+        
+        .back-btn {
+            background: linear-gradient(45deg, #ff4c4c, #ff1a1a);
+            color: #fff;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        
+        .back-btn:hover {
+            background: linear-gradient(45deg, #ff1a1a, #cc0000);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 0 20px #ff4c4c;
+        }
+        
+        .mode-buttons {
+            position: absolute;
+            top: 70px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="back-btn" href='game list .html'>Back</button>
+    <div class="score">Score: 0</div>
+    <div class="game-over">Game Over</div>
+    <button class="restart">Restart</button>
+    <div class="mode-buttons">
+        <button onclick="setMode('easy')">Easy</button>
+        <button onclick="setMode('normal')">Normal</button>
+        <button onclick="setMode('hard')">Hard</button>
+    </div>
+    <canvas id="gameCanvas" width="900" height="450"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let score = 0;
+        const scoreEl = document.querySelector('.score');
+        const gameOverEl = document.querySelector('.game-over');
+        const restartBtn = document.querySelector('.restart');
+        let gameOver = false;
+        let jumbieSpeed = 6;
+
+        const player = {
+            x: 50,
+            y: 300,
+            width: 50,
+            height: 50,
+            color: '#00ff00',
+            dy: 0,
+            gravity: 1,
+            jumpPower: 15,
+            grounded: true
+        };
+        const jumbies = [];
+        let spawnInterval = 1400;
+        const particles = [];
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 4 + 2;
+                this.color = color;
+                this.speedX = (Math.random() - 0.5) * 4;
+                this.speedY = (Math.random() - 1) * 4;
+                this.life = 30;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life--;
+                this.size *= 0.95;
+            }
+            draw() {
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        function spawnJumpParticles() {
+            for (let i = 0; i < 6; i++) particles.push(new Particle(player.x + player.width / 2, player.y + player.height, '#0ff'));
+        }
+
+        function spawnJumbyParticles(jumby) {
+            for (let i = 0; i < 8; i++) particles.push(new Particle(jumby.x + jumby.width / 2, jumby.y + jumby.height / 2, '#ff0066'));
+        }
+
+        document.addEventListener('keydown', e => {
+            if ((e.code === 'Space' || e.code === 'ArrowUp') && player.grounded) {
+                player.dy = -player.jumpPower;
+                player.grounded = false;
+                spawnJumpParticles();
+            }
+        });
+        document.addEventListener('touchstart', e => {
+            if (player.grounded) {
+                player.dy = -player.jumpPower;
+                player.grounded = false;
+                spawnJumpParticles();
+            }
+        });
+
+        function spawnJumby() {
+            jumbies.push({
+                x: canvas.width,
+                y: 300,
+                width: 50,
+                height: 50,
+                color: '#ff0000',
+                speed: jumbieSpeed,
+                bounce: Math.random() * 0.6 + 0.8
+            });
+        }
+
+        function isColliding(a, b) {
+            return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
+        }
+
+        function update() {
+            if (gameOver) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Player physics
+            player.dy += player.gravity;
+            player.y += player.dy;
+            if (player.y + player.height >= 350) {
+                player.y = 350 - player.height;
+                player.dy = 0;
+                player.grounded = true;
+            }
+
+            // Draw player
+            ctx.shadowColor = '#0ff';
+            ctx.shadowBlur = 20;
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            ctx.shadowBlur = 0;
+
+            // Draw jumbies
+            jumbies.forEach((jumby, i) => {
+                jumby.x -= jumby.speed;
+                jumby.y = 300 + Math.sin(Date.now() / 200) * jumby.bounce * 10;
+                ctx.shadowColor = '#ff0066';
+                ctx.shadowBlur = 15;
+                ctx.fillStyle = jumby.color;
+                ctx.fillRect(jumby.x, jumby.y, jumby.width, jumby.height);
+                ctx.shadowBlur = 0;
+                if (isColliding(player, jumby)) endGame();
+                if (jumby.x + jumby.width < 0) {
+                    spawnJumbyParticles(jumby);
+                    jumbies.splice(i, 1);
+                    score++;
+                    scoreEl.innerHTML = 'Score: ' + score;
+                }
+            });
+
+            // Draw particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].life <= 0) particles.splice(i, 1);
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        function endGame() {
+            gameOver = true;
+            gameOverEl.style.display = 'block';
+            restartBtn.style.display = 'block';
+        }
+
+        restartBtn.addEventListener('click', () => {
+            score = 0;
+            scoreEl.innerHTML = 'Score: ' + score;
+            jumbies.length = 0;
+            player.y = 300;
+            player.dy = 0;
+            gameOver = false;
+            gameOverEl.style.display = 'none';
+            restartBtn.style.display = 'none';
+            update();
+        });
+
+        function setMode(mode) {
+            if (mode === 'easy') jumbieSpeed = 4;
+            else if (mode === 'normal') jumbieSpeed = 6;
+            else if (mode === 'hard') jumbieSpeed = 9;
+        }
+
+        setInterval(() => {
+            if (!gameOver) spawnJumby();
+        }, spawnInterval);
+        update();
+    </script>
+</body>
+
+</html>

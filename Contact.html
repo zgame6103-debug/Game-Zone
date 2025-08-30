@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Ultimate Game Gallery</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(-45deg, #0f172a, #1e293b, #0f172a, #1a237e);
+            background-size: 400% 400%;
+            animation: bgAnim 12s infinite alternate ease-in-out;
+            color: #fff;
+        }
+        
+        @keyframes bgAnim {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+        /* Navigation */
+        
+        .top-nav {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(0, 0, 0, 0.7);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .top-nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 25px;
+            font-weight: bold;
+            position: relative;
+            transition: color 0.3s;
+        }
+        
+        .top-nav a::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 0%;
+            height: 2px;
+            background-color: #40ffc6;
+            transition: width 0.4s ease;
+        }
+        
+        .top-nav a:hover::after {
+            width: 100%;
+        }
+        
+        .top-nav a:hover {
+            color: #40ffc6;
+        }
+        /* Contact Section */
+        
+        .contact-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 100px 20px 60px;
+            background: rgba(0, 0, 0, 0.6);
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        
+        .contact-section h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 20px #40ffc6;
+            animation: fadeInDown 1s ease forwards;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .contact-section p {
+            max-width: 600px;
+            text-align: center;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            animation: fadeIn 1.5s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        /* Form */
+        
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            animation: scaleUp 1s ease forwards;
+        }
+        
+        @keyframes scaleUp {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .form-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            outline: none;
+        }
+        
+        .form-group label {
+            position: absolute;
+            top: 14px;
+            left: 12px;
+            color: #ccc;
+            pointer-events: none;
+            transition: 0.3s ease;
+        }
+        
+        .form-group input:focus+label,
+        .form-group input:not(:placeholder-shown)+label,
+        .form-group textarea:focus+label,
+        .form-group textarea:not(:placeholder-shown)+label {
+            top: -8px;
+            left: 10px;
+            font-size: 12px;
+            color: #40ffc6;
+        }
+        /* Buttons */
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #ff4081, #ff0057);
+            color: #fff;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .submit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #ff4081;
+        }
+        
+        .submit-btn:active {
+            transform: scale(0.95);
+        }
+        /* Back Button */
+        
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #00e5ff, #00bcd4);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px #00e5ff;
+        }
+        
+        .success-msg {
+            display: none;
+            margin-top: 20px;
+            color: #40ffc6;
+            font-weight: bold;
+            animation: fadeIn 0.6s ease forwards;
+            text-shadow: 0 0 10px #40ffc6;
+        }
+        /* Footer */
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            font-size: 14px;
+            margin-top: 50px;
+            color: #bbb;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-nav">
+        <a href="home.html">Home</a>
+        <a href="About.html">About</a>
+        <a href="Contact.html">Contact</a>
+        <a href="index.html">Login</a>
+    </div>
+
+    <section class="contact-section" id="contact">
+        <h1>Contact Us</h1>
+        <p>Have a question or want to share feedback? Fill out the form below and we will get back to you as soon as possible!</p>
+
+        <form id="contactForm">
+            <div class="form-group">
+                <input type="text" name="name" placeholder=" " required>
+                <label>Your Name</label>
+            </div>
+            <div class="form-group">
+                <input type="email" name="email" placeholder=" " required>
+                <label>Your Email</label>
+            </div>
+            <div class="form-group">
+                <textarea name="message" rows="6" placeholder=" " required></textarea>
+                <label>Your Message</label>
+            </div>
+            <button type="submit" class="submit-btn">Send Message</button>
+        </form>
+
+        <div class="success-msg" id="successMsg">✅ Thank you! Your message has been sent.</div>
+
+        <a class="back-btn" href="home.html">⬅ Back to Home</a>
+    </section>
+
+    <footer>
+        &copy; 2025 Ultimate Game Gallery. All Rights Reserved.
+    </footer>
+
+    <script>
+        const form = document.getElementById('contactForm');
+        const successMsg = document.getElementById('successMsg');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            successMsg.style.display = 'block';
+            form.reset();
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 4000);
+        });
+    </script>
+
+</body>
+
+</html>

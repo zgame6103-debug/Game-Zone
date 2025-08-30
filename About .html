@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Ultimate Game Gallery</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: url('https://images.unsplash.com/photo-1508780709619-79562169bc64?auto=format&fit=crop&w=1950&q=80') no-repeat center center/cover;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+        /* Floating background particles */
+        
+        body::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBg 15s linear infinite;
+            z-index: 0;
+        }
+        
+        @keyframes moveBg {
+            from {
+                background-position: 0 0;
+            }
+            to {
+                background-position: 100px 100px;
+            }
+        }
+        /* Top Navigation */
+        
+        .top-nav {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(0, 0, 0, 0.7);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.7);
+            animation: fadeDown 1s ease;
+        }
+        
+        .top-nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 25px;
+            font-weight: bold;
+            position: relative;
+            transition: color 0.3s, transform 0.3s;
+        }
+        /* Animated underline */
+        
+        .top-nav a::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, #40e2ff, #fcff40);
+            transition: width 0.4s ease;
+        }
+        
+        .top-nav a:hover::after {
+            width: 100%;
+        }
+        
+        .top-nav a:hover {
+            color: #40e2ff;
+            transform: scale(1.1);
+        }
+        /* Hero Section */
+        
+        .hero {
+            text-align: center;
+            padding: 120px 20px 60px;
+            background: rgba(0, 0, 0, 0.6);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            animation: fadeInDown 1s ease forwards;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+            animation: fadeIn 1.5s ease forwards;
+        }
+        /* Team Section */
+        
+        .team-section {
+            padding: 60px 40px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+            position: relative;
+            animation: fadeIn 2s ease;
+        }
+        
+        .team-section h2 {
+            font-size: 2rem;
+            margin-bottom: 40px;
+        }
+        
+        .team-members {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+        
+        .member-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.5s, box-shadow 0.5s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .member-card::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #40e2ff, #fcff40, #ff4081, #40e2ff);
+            background-size: 400%;
+            border-radius: 15px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.5s;
+            animation: glowing 10s linear infinite;
+        }
+        
+        @keyframes glowing {
+            0% {
+                background-position: 0 0;
+            }
+            50% {
+                background-position: 400% 0;
+            }
+            100% {
+                background-position: 0 0;
+            }
+        }
+        
+        .member-card:hover::before {
+            opacity: 1;
+        }
+        
+        .member-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+        }
+        
+        .member-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        
+        .member-card h3 {
+            margin: 15px 0;
+        }
+        
+        .member-card p {
+            padding: 0 15px 20px;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+        /* Animated Button */
+        
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(90deg, #40e2ff, #333fe7);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .back-btn::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: skewX(-25deg);
+            transition: left 0.5s;
+        }
+        
+        .back-btn:hover::after {
+            left: 100%;
+        }
+        
+        .back-btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #fcff40, #40e2ff);
+        }
+        
+        .back-btn:active {
+            transform: scale(0.95);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            font-size: 14px;
+            margin-top: 50px;
+            animation: fadeUp 2s ease;
+        }
+        /* Animations */
+        
+        @keyframes fadeInDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-nav">
+        <a href="home.html">Home</a>
+        <a href="About.html">About</a>
+        <a href="Contact.html">Contact</a>
+        <a href="index.html">Login</a>
+    </div>
+
+    <section class="hero">
+        <h1>About Our Website</h1>
+        <p>Ultimate Game is your premier destination for discovering exciting and immersive online games. We curate a collection of adventure, action, racing, and strategy games for gamers of all ages. Our mission is to deliver fun, challenge, and unforgettable
+            gaming experiences in one interactive platform. Get now Home page or click Get games and enjoy Games. If you have any problems, please contact WhatsApp number: 01611762942.</p>
+        <a class="back-btn" href="home.html">Back to Home</a>
+    </section>
+
+    <section class="team-section" id="about">
+        <h2>Meet the Team</h2>
+        <div class="team-members">
+            <div class="member-card">
+                <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=400&q=80" alt="Team Member">
+                <h3>Amer Panno</h3>
+                <p>Founder & Game Curator. Passionate about delivering the ultimate gaming experience.</p>
+            </div>
+            <div class="member-card">
+                <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=400&q=80" alt="Team Member">
+                <h3>Jane Doe</h3>
+                <p>Lead Developer. Creates smooth gameplay mechanics and immersive environments.</p>
+            </div>
+            <div class="member-card">
+                <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=400&q=80" alt="Team Member">
+                <h3>John Smith</h3>
+                <p>UI/UX Designer. Ensures the platform is intuitive and visually stunning.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2025 Ultimate Game Gallery. All Rights Reserved.
+    </footer>
+</body>
+
+</html>

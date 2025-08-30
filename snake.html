@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game Pro</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
+            background-size: 400% 400%;
+            animation: bgAnim 10s infinite alternate ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        @keyframes bgAnim {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+        
+        canvas {
+            background: rgba(0, 0, 0, 0.7);
+            border: 3px solid #fff;
+            border-radius: 15px;
+            box-shadow: 0px 0px 25px rgba(0, 255, 150, 0.8);
+        }
+        
+        .score {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 28px;
+            color: #00ffcc;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc;
+            animation: pulse 1.5s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            from {
+                transform: scale(1);
+            }
+            to {
+                transform: scale(1.1);
+            }
+        }
+        
+        .speed-buttons {
+            position: absolute;
+            top: 70px;
+            right: 30px;
+            display: flex;
+        }
+        
+        .speed-buttons button {
+            padding: 8px 14px;
+            margin-left: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0px 0px 10px rgba(0, 123, 255, 0.8);
+        }
+        
+        .speed-buttons button:hover {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            box-shadow: 0px 0px 20px rgba(0, 123, 255, 1);
+        }
+        
+        .game-over {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            color: #ff4c4c;
+            font-size: 60px;
+            font-weight: bold;
+            text-shadow: 0 0 15px #ff0000, 0 0 25px #ff0000;
+            animation: popIn 0.6s forwards;
+            display: none;
+        }
+        
+        @keyframes popIn {
+            to {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        
+        .restart {
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 25px;
+            font-size: 22px;
+            cursor: pointer;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            font-weight: bold;
+            display: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.9);
+        }
+        
+        .restart:hover {
+            transform: translateX(-50%) scale(1.1);
+            background: linear-gradient(135deg, #20c997, #28a745);
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            padding: 8px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #ff4c4c, #ff0000);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.9);
+        }
+        
+        .back-btn:hover {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, #ff0000, #ff4c4c);
+        }
+    </style>
+</head>
+
+<body>
+    <button class="back-btn" onclick="goBack()">Back</button>
+    <div class="score">Score: 0</div>
+    <div class="speed-buttons">
+        Speed:
+        <button onclick="setSpeed('slow')">Slow</button>
+        <button onclick="setSpeed('normal')">Normal</button>
+        <button onclick="setSpeed('fast')">Fast</button>
+    </div>
+    <canvas id="gameCanvas" width="600" height="600"></canvas>
+    <div class="game-over">Game Over</div>
+    <button class="restart">Restart</button>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const box = 30;
+        let snake = [{
+            x: 9 * box,
+            y: 10 * box
+        }];
+        let direction = 'RIGHT';
+        let food = {
+            x: Math.floor(Math.random() * 20) * box,
+            y: Math.floor(Math.random() * 20) * box
+        };
+        let score = 0;
+        let gameInterval = 150;
+
+        const scoreEl = document.querySelector('.score');
+        const gameOverEl = document.querySelector('.game-over');
+        const restartBtn = document.querySelector('.restart');
+
+        document.addEventListener('keydown', changeDirection);
+
+        function changeDirection(event) {
+            if (event.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
+            else if (event.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
+            else if (event.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
+            else if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Snake
+            snake.forEach((segment, index) => {
+                ctx.fillStyle = index === 0 ? "#00ffcc" : "#008080";
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = "#00ffcc";
+                ctx.fillRect(segment.x, segment.y, box, box);
+                ctx.strokeStyle = "#003333";
+                ctx.strokeRect(segment.x, segment.y, box, box);
+            });
+
+            // Food glow
+            ctx.fillStyle = "red";
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = "red";
+            ctx.fillRect(food.x, food.y, box, box);
+
+            // Snake move
+            let snakeX = snake[0].x;
+            let snakeY = snake[0].y;
+            if (direction === "LEFT") snakeX -= box;
+            if (direction === "RIGHT") snakeX += box;
+            if (direction === "UP") snakeY -= box;
+            if (direction === "DOWN") snakeY += box;
+
+            if (snakeX === food.x && snakeY === food.y) {
+                score++;
+                scoreEl.innerHTML = 'Score: ' + score;
+                food = {
+                    x: Math.floor(Math.random() * 20) * box,
+                    y: Math.floor(Math.random() * 20) * box
+                };
+            } else {
+                snake.pop();
+            }
+
+            const newHead = {
+                x: snakeX,
+                y: snakeY
+            };
+            snake.unshift(newHead);
+
+            if (snakeX < 0 || snakeX >= canvas.width || snakeY < 0 || snakeY >= canvas.height || collision(newHead, snake.slice(1))) {
+                clearInterval(game);
+                gameOverEl.style.display = 'block';
+                restartBtn.style.display = 'block';
+            }
+        }
+
+        function collision(head, array) {
+            return array.some(segment => segment.x === head.x && segment.y === head.y);
+        }
+
+        function setSpeed(mode) {
+            clearInterval(game);
+            if (mode === 'slow') gameInterval = 250;
+            else if (mode === 'normal') gameInterval = 150;
+            else if (mode === 'fast') gameInterval = 75;
+            game = setInterval(draw, gameInterval);
+        }
+
+        restartBtn.addEventListener('click', () => {
+            snake = [{
+                x: 9 * box,
+                y: 10 * box
+            }];
+            direction = 'RIGHT';
+            score = 0;
+            scoreEl.innerHTML = 'Score: ' + score;
+            gameOverEl.style.display = 'none';
+            restartBtn.style.display = 'none';
+            food = {
+                x: Math.floor(Math.random() * 20) * box,
+                y: Math.floor(Math.random() * 20) * box
+            };
+            game = setInterval(draw, gameInterval);
+        });
+
+        let game = setInterval(draw, gameInterval);
+    </script>
+</body>
+
+</html>

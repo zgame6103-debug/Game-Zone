@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>3D Chess Game Enhanced</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: radial-gradient(circle at center, #0f172a, #000);
+            color: white;
+            overflow: hidden;
+        }
+        /* LOGIN */
+        
+        #loginScreen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+        }
+        
+        .login-box {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 0 20px #0ff, inset 0 0 40px #0ff3;
+            animation: pulseBox 3s infinite alternate;
+        }
+        
+        @keyframes pulseBox {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 15px #0ff;
+            }
+            100% {
+                transform: scale(1.05);
+                box-shadow: 0 0 35px #0ff;
+            }
+        }
+        
+        .login-box input,
+        .login-box select,
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 12px;
+            border: none;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        .login-box input,
+        .login-box select {
+            box-shadow: inset 0 0 8px #0ff5;
+        }
+        
+        .login-box button {
+            background: linear-gradient(45deg, #00ffff, #0088ff);
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .login-box button:hover {
+            transform: scale(1.1);
+            background: linear-gradient(45deg, #00cccc, #0066ff);
+            color: white;
+        }
+        /* GAME */
+        
+        #gameScreen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            padding: 10px;
+        }
+        
+        #toolbar {
+            display: flex;
+            gap: 15px;
+            margin: 10px;
+        }
+        
+        .toolbar-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            padding: 10px 14px;
+            border-radius: 50%;
+            color: #0ff;
+            font-size: 22px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .toolbar-btn:hover {
+            transform: scale(1.2) rotate(10deg);
+            box-shadow: 0 0 15px #0ff;
+        }
+        
+        #welcomeUser {
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #0ff;
+        }
+        
+        .board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            width: 90vmin;
+            height: 90vmin;
+            max-width: 600px;
+            max-height: 600px;
+            border: 5px solid #0ff;
+            border-radius: 12px;
+            box-shadow: 0 0 30px #0ff8, inset 0 0 40px #0ff4;
+            position: relative;
+        }
+        
+        .cell {
+            font-size: 6vmin;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .cell.white {
+            background: #f0d9b5;
+        }
+        
+        .cell.black {
+            background: #b58863;
+        }
+        
+        .cell:hover {
+            background: #22c55e66;
+        }
+        
+        .selected {
+            outline: 3px solid #0ff;
+        }
+        
+        #animatedLayer {
+            pointer-events: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .animated-piece {
+            position: absolute;
+            font-size: 6vmin;
+            transition: transform 0.5s ease;
+            text-shadow: 0 0 10px #0ff;
+        }
+        
+        audio {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loginScreen">
+        <div class="login-box">
+            <h2>Login to Chess</h2>
+            <input type="text" id="username" placeholder="Enter name" />
+            <select id="modeSelect">
+      <option value="friendly">Friendly (2 Players)</option>
+      <option value="computer">Vs Computer</option>
+    </select>
+            <button id="startBtn">Start Game</button>
+        </div>
+    </div>
+    <div id="gameScreen">
+        <div id="toolbar">
+            <button class="toolbar-btn" onclick="newGame()"><i class='bx bx-reset'></i></button>
+            <button class="toolbar-btn" onclick="flipBoard()"><i class='bx bx-refresh'></i></button>
+            <button class="toolbar-btn" onclick="toggleTheme()"><i class='bx bx-moon'></i></button>
+        </div>
+        <h1 id="welcomeUser"></h1>
+        <div class="board" id="board"></div>
+        <div id="animatedLayer"></div>
+        <audio id="moveSound" src="https://actions.google.com/sounds/v1/wood/wood_plank_flicks.ogg" preload="auto"></audio>
+    </div>
+    <script>
+        const pieces = {
+            r: "♜",
+            n: "♞",
+            b: "♝",
+            q: "♛",
+            k: "♚",
+            p: "♟",
+            R: "♖",
+            N: "♘",
+            B: "♗",
+            Q: "♕",
+            K: "♔",
+            P: "♙"
+        };
+        const startPos = ["rnbqkbnr", "pppppppp", "........", "........", "........", "........", "PPPPPPPP", "RNBQKBNR"];
+        let boardState = [],
+            selected = null,
+            currentPlayer = "white",
+            gameMode = "friendly",
+            flipped = false;
+
+        const loginScreen = document.getElementById("loginScreen"),
+            gameScreen = document.getElementById("gameScreen"),
+            boardElem = document.getElementById("board"),
+            welcomeUser = document.getElementById("welcomeUser"),
+            animatedLayer = document.getElementById("animatedLayer"),
+            moveSound = document.getElementById("moveSound");
+
+        function createBoard() {
+            boardElem.innerHTML = "";
+            boardState = [];
+            for (let r = 0; r < 8; r++) {
+                let rowArr = [];
+                for (let c = 0; c < 8; c++) {
+                    const cell = document.createElement("div");
+                    cell.className = "cell " + ((r + c) % 2 === 0 ? "white" : "black");
+                    cell.dataset.row = r;
+                    cell.dataset.col = c;
+                    cell.textContent = pieces[startPos[r][c]] || "";
+                    cell.onclick = () => onCellClick(r, c);
+                    boardElem.appendChild(cell);
+                    rowArr.push(startPos[r][c]);
+                }
+                boardState.push(rowArr);
+            }
+        }
+
+        function renderBoard() {
+            document.querySelectorAll(".cell").forEach(cell => {
+                const r = +cell.dataset.row,
+                    c = +cell.dataset.col;
+                cell.textContent = pieces[boardState[r][c]] || "";
+                cell.classList.remove("selected");
+            });
+            if (selected) {
+                const [r, c] = selected;
+                document.querySelector(`.cell[data-row='${r}'][data-col='${c}']`).classList.add("selected");
+            }
+        }
+
+        function onCellClick(r, c) {
+            const clicked = boardState[r][c];
+            const isWhite = /[PRNBQK]/.test(clicked);
+            const isBlack = /[prnbqk]/.test(clicked);
+            if (selected) {
+                const [sr, sc] = selected, moving = boardState[sr][sc];
+                if ((currentPlayer === "white" && isWhite) || (currentPlayer === "black" && isBlack)) {
+                    selected = [r, c];
+                    renderBoard();
+                    return;
+                }
+                if (isLegalMove(moving, sr, sc, r, c)) {
+                    animateMove(sr, sc, r, c, moving, () => {
+                        boardState[r][c] = moving;
+                        boardState[sr][sc] = ".";
+                        selected = null;
+                        moveSound.play();
+                        currentPlayer = currentPlayer === "white" ? "black" : "white";
+                        renderBoard();
+                        if (gameMode === "computer" && currentPlayer === "black") setTimeout(computerMove, 600);
+                    });
+                } else {
+                    selected = null;
+                    renderBoard();
+                }
+            } else if ((currentPlayer === "white" && isWhite) || (currentPlayer === "black" && isBlack && gameMode === "friendly")) {
+                selected = [r, c];
+                renderBoard();
+            }
+        }
+
+        function isLegalMove(p, fr, fc, tr, tc) {
+            return true;
+        }
+
+        function animateMove(fr, fc, tr, tc, piece, cb) {
+            const fromRect = document.querySelector(`.cell[data-row='${fr}'][data-col='${fc}']`).getBoundingClientRect(),
+                toRect = document.querySelector(`.cell[data-row='${tr}'][data-col='${tc}']`).getBoundingClientRect(),
+                boardRect = boardElem.getBoundingClientRect();
+            const anim = document.createElement("div");
+            anim.className = "animated-piece";
+            anim.textContent = pieces[piece];
+            anim.style.left = (fromRect.left - boardRect.left) + "px";
+            anim.style.top = (fromRect.top - boardRect.top) + "px";
+            animatedLayer.appendChild(anim);
+            anim.offsetWidth;
+            anim.style.transform = `translate(${toRect.left-fromRect.left}px,${toRect.top-fromRect.top}px)`;
+            anim.addEventListener("transitionend", () => {
+                anim.remove();
+                cb();
+            }, {
+                once: true
+            });
+        }
+
+        function computerMove() {
+            let moves = [];
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const p = boardState[r][c];
+                    if (/[prnbqk]/.test(p)) {
+                        let nr = Math.max(0, Math.min(7, r + (Math.floor(Math.random() * 3) - 1))),
+                            nc = Math.max(0, Math.min(7, c + (Math.floor(Math.random() * 3) - 1)));
+                        if (nr !== r || nc !== c) moves.push({
+                            from: [r, c],
+                            to: [nr, nc]
+                        });
+                    }
+                }
+            }
+            if (moves.length) {
+                const m = moves[Math.floor(Math.random() * moves.length)],
+                    fr = m.from[0],
+                    fc = m.from[1],
+                    tr = m.to[0],
+                    tc = m.to[1],
+                    piece = boardState[fr][fc];
+                animateMove(fr, fc, tr, tc, piece, () => {
+                    boardState[tr][tc] = piece;
+                    boardState[fr][fc] = ".";
+                    moveSound.play();
+                    currentPlayer = "white";
+                    renderBoard();
+                });
+            }
+        }
+
+        function newGame() {
+            createBoard();
+            currentPlayer = "white";
+        }
+
+        function flipBoard() {
+            flipped = !flipped;
+            boardElem.style.transform = flipped ? "rotate(180deg)" : "rotate(0deg)";
+        }
+
+        function toggleTheme() {
+            document.body.style.background = document.body.style.background.includes("0f172a") ? "radial-gradient(circle,#111,#000)" : "radial-gradient(circle at center,#0f172a,#000)";
+        }
+
+        document.getElementById("startBtn").onclick = () => {
+            const name = document.getElementById("username").value;
+            if (!name) {
+                alert("Enter your name");
+                return;
+            }
+            gameMode = document.getElementById("modeSelect").value;
+            loginScreen.style.display = "none";
+            gameScreen.style.display = "flex";
+            welcomeUser.textContent = `Welcome, ${name}! (${gameMode==="computer"?"Vs Computer":"Friendly"})`;
+            newGame();
+        };
+    </script>
+</body>
+
+</html>
