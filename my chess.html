@@ -4,51 +4,186 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>3D Chess Game Enhanced</title>
+    <title>3D Chess — Enhanced</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <style>
+        /* ---------- Reset & Base ---------- */
+        
         * {
-            box-sizing: border-box;
+            box-sizing: border-box
         }
         
-        body,
-        html {
-            margin: 0;
-            padding: 0;
+        html,
+        body {
             height: 100%;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: radial-gradient(circle at center, #0f172a, #000);
-            color: white;
-            overflow: hidden;
+            margin: 0;
+            font-family: Inter, 'Segoe UI', Tahoma, sans-serif;
+            background: #060612;
+            color: #e6f7ff
         }
-        /* LOGIN */
+        /* Animated galaxy-ish background */
+        
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(1200px 600px at 10% 10%, rgba(2, 6, 23, 0.6), transparent 10%), radial-gradient(900px 400px at 90% 80%, rgba(3, 18, 40, 0.5), transparent 8%), linear-gradient(180deg, #041029 0%, #000 100%);
+            z-index: -3
+        }
+        
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: linear-gradient(transparent 60%, rgba(255, 255, 255, 0.02)), repeating-radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.02) 0 1px, transparent 2px 6px);
+            opacity: 0.8;
+            z-index: -2;
+            mix-blend-mode: screen;
+            animation: slowShift 30s linear infinite
+        }
+        
+        @keyframes slowShift {
+            0% {
+                transform: translateY(0)
+            }
+            50% {
+                transform: translateY(10px)
+            }
+            100% {
+                transform: translateY(0)
+            }
+        }
+        /* ---------- Layout ---------- */
+        
+        .app {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 28px;
+        }
+        
+        .ui-wrap {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 20px;
+            align-items: start
+        }
+        /* Side panel */
+        
+        .panel {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.02));
+            border-radius: 14px;
+            padding: 18px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.02)
+        }
+        
+        .panel h3 {
+            margin: 0 0 10px 0;
+            color: #bfefff;
+            font-size: 18px
+        }
+        
+        .player-info {
+            display: flex;
+            gap: 12px;
+            align-items: center
+        }
+        
+        .avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0ff7, #0055ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #001;
+            box-shadow: 0 6px 18px rgba(0, 255, 255, 0.06)
+        }
+        
+        .meta {
+            flex: 1
+        }
+        
+        .meta .name {
+            font-weight: 700
+        }
+        
+        .meta .sub {
+            font-size: 13px;
+            color: #bfe0f7
+        }
+        /* Toolbar / controls */
+        
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 14px
+        }
+        
+        .btn {
+            --size: 48px;
+            width: var(--size);
+            height: var(--size);
+            border-radius: 12px;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+            color: #0ff;
+            font-size: 20px;
+            box-shadow: 0 6px 18px rgba(0, 255, 255, 0.04);
+            transition: transform .22s ease, box-shadow .22s ease
+        }
+        
+        .btn:active {
+            transform: translateY(2px)
+        }
+        
+        .btn:hover {
+            transform: translateY(-6px) rotate(-6deg);
+            box-shadow: 0 18px 40px rgba(0, 170, 255, 0.12)
+        }
+        
+        .btn .dot {
+            position: absolute;
+            right: 6px;
+            top: 6px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #06f8;
+            box-shadow: 0 2px 6px rgba(0, 200, 255, 0.2)
+        }
+        /* Start/Login box */
         
         #loginScreen {
+            position: fixed;
+            inset: 0;
             display: flex;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.6);
+            justify-content: center
         }
         
         .login-box {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            box-shadow: 0 0 20px #0ff, inset 0 0 40px #0ff3;
-            animation: pulseBox 3s infinite alternate;
+            width: 360px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+            padding: 26px;
+            border-radius: 14px;
+            box-shadow: 0 20px 60px rgba(2, 6, 23, 0.7);
+            backdrop-filter: blur(6px)
         }
         
-        @keyframes pulseBox {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 0 15px #0ff;
-            }
-            100% {
-                transform: scale(1.05);
-                box-shadow: 0 0 35px #0ff;
-            }
+        .login-box h2 {
+            margin: 0 0 8px 0;
+            color: #d9f7ff
         }
         
         .login-box input,
@@ -56,126 +191,168 @@
         .login-box button {
             width: 100%;
             padding: 12px;
-            margin: 10px 0;
-            border-radius: 12px;
+            border-radius: 10px;
             border: none;
-            font-size: 16px;
-            outline: none;
+            margin-top: 10px
         }
         
         .login-box input,
         .login-box select {
-            box-shadow: inset 0 0 8px #0ff5;
+            background: rgba(255, 255, 255, 0.02);
+            color: #dff;
+            outline: 1px solid rgba(255, 255, 255, 0.02)
         }
         
         .login-box button {
-            background: linear-gradient(45deg, #00ffff, #0088ff);
-            color: #000;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.3s;
+            background: linear-gradient(90deg, #00d4ff, #0066ff);
+            color: #001;
+            font-weight: 700;
+            cursor: pointer
         }
+        /* Game area */
         
-        .login-box button:hover {
-            transform: scale(1.1);
-            background: linear-gradient(45deg, #00cccc, #0066ff);
-            color: white;
-        }
-        /* GAME */
-        
-        #gameScreen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            padding: 10px;
-        }
-        
-        #toolbar {
+        .game-area {
             display: flex;
-            gap: 15px;
-            margin: 10px;
+            flex-direction: column;
+            gap: 14px;
+            align-items: center
         }
         
-        .toolbar-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: none;
-            padding: 10px 14px;
-            border-radius: 50%;
-            color: #0ff;
-            font-size: 22px;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
+        .status {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: center
         }
         
-        .toolbar-btn:hover {
-            transform: scale(1.2) rotate(10deg);
-            box-shadow: 0 0 15px #0ff;
+        .turn-badge {
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #002b3a, #001522);
+            color: #9ff;
+            font-weight: 700;
+            box-shadow: 0 6px 20px rgba(0, 170, 255, 0.06)
         }
+        /* Board */
         
-        #welcomeUser {
-            font-size: 24px;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px #0ff;
+        .board-wrap {
+            position: relative;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center
         }
         
         .board {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
-            grid-template-rows: repeat(8, 1fr);
-            width: 90vmin;
-            height: 90vmin;
-            max-width: 600px;
-            max-height: 600px;
-            border: 5px solid #0ff;
-            border-radius: 12px;
-            box-shadow: 0 0 30px #0ff8, inset 0 0 40px #0ff4;
+            grid-auto-rows: 1fr;
+            width: min(86vmin, 720px);
+            height: min(86vmin, 720px);
+            border-radius: 14px;
+            padding: 10px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), inset 0 12px 40px rgba(0, 255, 255, 0.02);
             position: relative;
+            z-index: 3;
+            transition: transform .5s ease
+        }
+        
+        .board.flipped {
+            transform: rotate(180deg)
         }
         
         .cell {
-            font-size: 6vmin;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: background 0.3s;
+            font-size: calc(min(6vmin, 64px));
+            user-select: none;
+            position: relative;
+            transition: background .18s ease, transform .18s ease
+        }
+        
+        .board.flipped .cell {
+            transform: rotate(180deg)
         }
         
         .cell.white {
-            background: #f0d9b5;
+            background: linear-gradient(180deg, #f3e2c9, #e0c9a8)
         }
         
         .cell.black {
-            background: #b58863;
+            background: linear-gradient(180deg, #7a5a40, #6a4a33)
         }
         
         .cell:hover {
-            background: #22c55e66;
+            filter: brightness(1.04);
+            transform: translateY(-4px)
         }
         
-        .selected {
-            outline: 3px solid #0ff;
+        .cell.selected {
+            outline: 4px solid rgba(0, 255, 255, 0.18);
+            box-shadow: 0 8px 30px rgba(0, 170, 255, 0.06)
         }
+        /* Animated floating pieces while moving */
         
         #animatedLayer {
             pointer-events: none;
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
+            z-index: 6
         }
         
         .animated-piece {
             position: absolute;
-            font-size: 6vmin;
-            transition: transform 0.5s ease;
-            text-shadow: 0 0 10px #0ff;
+            font-size: calc(min(6vmin, 64px));
+            transition: transform .45s cubic-bezier(.2, .9, .2, 1);
+            text-shadow: 0 8px 30px rgba(0, 200, 255, 0.12)
+        }
+        /* Move log */
+        
+        .moves {
+            margin-top: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px;
+            border-radius: 10px;
+            max-height: 220px;
+            overflow: auto
         }
         
-        audio {
-            display: none;
+        .moves .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 4px;
+            color: #bfe
+        }
+        /* Captured pieces */
+        
+        .captured {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px
+        }
+        
+        .cap-piece {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.12);
+            color: #fff
+        }
+        /* Small screens */
+        
+        @media (max-width:880px) {
+            .ui-wrap {
+                grid-template-columns: 1fr;
+            }
+            .panel {
+                order: 2
+            }
         }
     </style>
 </head>
@@ -183,27 +360,60 @@
 <body>
     <div id="loginScreen">
         <div class="login-box">
-            <h2>Login to Chess</h2>
-            <input type="text" id="username" placeholder="Enter name" />
+            <h2>Start Chess</h2>
+            <input id="username" placeholder="Enter your name" />
             <select id="modeSelect">
-      <option value="friendly">Friendly (2 Players)</option>
-      <option value="computer">Vs Computer</option>
-    </select>
+        <option value="friendly">Friendly (2 Players)</option>
+        <option value="computer">Vs Computer</option>
+      </select>
             <button id="startBtn">Start Game</button>
         </div>
     </div>
-    <div id="gameScreen">
-        <div id="toolbar">
-            <button class="toolbar-btn" onclick="newGame()"><i class='bx bx-reset'></i></button>
-            <button class="toolbar-btn" onclick="flipBoard()"><i class='bx bx-refresh'></i></button>
-            <button class="toolbar-btn" onclick="toggleTheme()"><i class='bx bx-moon'></i></button>
+
+    <div class="app" id="app" style="display:none">
+        <div class="ui-wrap">
+            <div class="panel">
+                <div class="player-info">
+                    <div class="avatar" id="avatarTxt">P</div>
+                    <div class="meta">
+                        <div class="name" id="playerName">Player</div>
+                        <div class="sub" id="playerMode">Mode</div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn" id="newBtn" title="New Game"><i class='bx bx-reset'></i></button>
+                    <button class="btn" id="flipBtn" title="Flip Board"><i class='bx bx-refresh'></i></button>
+                    <button class="btn" id="themeBtn" title="Toggle Theme"><i class='bx bx-moon'></i></button>
+                    <button class="btn" id="soundBtn" title="Toggle Sound"><i class='bx bx-volume-full'></i></button>
+                </div>
+
+                <h3 style="margin-top:16px">Captured</h3>
+                <div class="captured" id="capturedWhite"></div>
+                <div style="height:6px"></div>
+                <div class="captured" id="capturedBlack"></div>
+
+                <h3 style="margin-top:16px">Move Log</h3>
+                <div class="moves" id="moveLog"></div>
+            </div>
+
+            <div class="game-area">
+                <div class="status">
+                    <div class="turn-badge" id="turnBadge">White to move</div>
+                </div>
+
+                <div class="board-wrap">
+                    <div class="board" id="board"></div>
+                    <div id="animatedLayer"></div>
+                </div>
+            </div>
         </div>
-        <h1 id="welcomeUser"></h1>
-        <div class="board" id="board"></div>
-        <div id="animatedLayer"></div>
-        <audio id="moveSound" src="https://actions.google.com/sounds/v1/wood/wood_plank_flicks.ogg" preload="auto"></audio>
     </div>
+
+    <audio id="moveSound" src="https://actions.google.com/sounds/v1/foley/metal_box_clunk.ogg" preload="auto"></audio>
+
     <script>
+        // --- pieces & starting pos ---
         const pieces = {
             r: "♜",
             n: "♞",
@@ -219,99 +429,142 @@
             P: "♙"
         };
         const startPos = ["rnbqkbnr", "pppppppp", "........", "........", "........", "........", "PPPPPPPP", "RNBQKBNR"];
+
+        // --- state ---
         let boardState = [],
             selected = null,
             currentPlayer = "white",
             gameMode = "friendly",
-            flipped = false;
+            flipped = false,
+            soundOn = true;
+        const loginScreen = document.getElementById('loginScreen'),
+            app = document.getElementById('app');
+        const boardElem = document.getElementById('board'),
+            animatedLayer = document.getElementById('animatedLayer');
+        const moveSound = document.getElementById('moveSound');
 
-        const loginScreen = document.getElementById("loginScreen"),
-            gameScreen = document.getElementById("gameScreen"),
-            boardElem = document.getElementById("board"),
-            welcomeUser = document.getElementById("welcomeUser"),
-            animatedLayer = document.getElementById("animatedLayer"),
-            moveSound = document.getElementById("moveSound");
-
+        // --- create board ---
         function createBoard() {
-            boardElem.innerHTML = "";
+            boardElem.innerHTML = '';
             boardState = [];
             for (let r = 0; r < 8; r++) {
-                let rowArr = [];
+                const row = [];
                 for (let c = 0; c < 8; c++) {
-                    const cell = document.createElement("div");
-                    cell.className = "cell " + ((r + c) % 2 === 0 ? "white" : "black");
+                    const cell = document.createElement('div');
+                    cell.className = 'cell ' + ((r + c) % 2 === 0 ? 'white' : 'black');
                     cell.dataset.row = r;
                     cell.dataset.col = c;
-                    cell.textContent = pieces[startPos[r][c]] || "";
-                    cell.onclick = () => onCellClick(r, c);
+                    cell.textContent = pieces[startPos[r][c]] || '';
+                    cell.addEventListener('click', () => onCellClick(r, c));
                     boardElem.appendChild(cell);
-                    rowArr.push(startPos[r][c]);
+                    row.push(startPos[r][c]);
                 }
-                boardState.push(rowArr);
+                boardState.push(row);
             }
+            refreshUI();
         }
 
-        function renderBoard() {
-            document.querySelectorAll(".cell").forEach(cell => {
+        function refreshUI() {
+            document.querySelectorAll('.cell').forEach(cell => {
                 const r = +cell.dataset.row,
                     c = +cell.dataset.col;
-                cell.textContent = pieces[boardState[r][c]] || "";
-                cell.classList.remove("selected");
+                cell.textContent = pieces[boardState[r][c]] || '';
+                cell.classList.remove('selected');
             });
             if (selected) {
-                const [r, c] = selected;
-                document.querySelector(`.cell[data-row='${r}'][data-col='${c}']`).classList.add("selected");
+                const selCell = document.querySelector(`.cell[data-row='${selected[0]}'][data-col='${selected[1]}']`);
+                if (selCell) selCell.classList.add('selected');
             }
         }
 
-        function onCellClick(r, c) {
-            const clicked = boardState[r][c];
-            const isWhite = /[PRNBQK]/.test(clicked);
-            const isBlack = /[prnbqk]/.test(clicked);
-            if (selected) {
-                const [sr, sc] = selected, moving = boardState[sr][sc];
-                if ((currentPlayer === "white" && isWhite) || (currentPlayer === "black" && isBlack)) {
-                    selected = [r, c];
-                    renderBoard();
-                    return;
-                }
-                if (isLegalMove(moving, sr, sc, r, c)) {
-                    animateMove(sr, sc, r, c, moving, () => {
-                        boardState[r][c] = moving;
-                        boardState[sr][sc] = ".";
-                        selected = null;
-                        moveSound.play();
-                        currentPlayer = currentPlayer === "white" ? "black" : "white";
-                        renderBoard();
-                        if (gameMode === "computer" && currentPlayer === "black") setTimeout(computerMove, 600);
-                    });
-                } else {
-                    selected = null;
-                    renderBoard();
-                }
-            } else if ((currentPlayer === "white" && isWhite) || (currentPlayer === "black" && isBlack && gameMode === "friendly")) {
-                selected = [r, c];
-                renderBoard();
-            }
+
+        // --- basic legal movement engine (no check detection) ---
+        function isOwnPiece(p, player) {
+            if (!p || p === '.') return false;
+            return player === 'white' ? /[PRNBQK]/.test(p) : /[prnbqk]/.test(p);
         }
 
-        function isLegalMove(p, fr, fc, tr, tc) {
+        function pathClear(fr, fc, tr, tc) {
+            const dr = Math.sign(tr - fr),
+                dc = Math.sign(tc - fc);
+            let r = fr + dr,
+                c = fc + dc;
+            while (r !== tr || c !== tc) {
+                if (boardState[r][c] !== '.') return false;
+                r += dr;
+                c += dc;
+            }
             return true;
         }
 
+        function isLegalMove(p, fr, fc, tr, tc) {
+            if (!p || p === '.') return false;
+            // can't capture own piece
+            if (isOwnPiece(boardState[tr][tc], currentPlayer)) return false;
+            const dr = tr - fr,
+                dc = tc - fc;
+            const absdr = Math.abs(dr),
+                absdc = Math.abs(dc);
+            const white = /[PRNBQK]/.test(p);
+            // Pawn
+            if (p.toLowerCase() === 'p') {
+                const dir = white ? -1 : 1; // white moves up (smaller row index)
+                // forward one
+                if (dc === 0 && dr === dir && boardState[tr][tc] === '.') return true;
+                // double on start
+                const startRow = white ? 6 : 1;
+                if (dc === 0 && fr === startRow && dr === 2 * dir && boardState[fr + dir][fc] === '.' && boardState[tr][tc] === '.') return true;
+                // capture
+                if (Math.abs(dc) === 1 && dr === dir && boardState[tr][tc] !== '.' && !isOwnPiece(boardState[tr][tc], currentPlayer)) return true;
+                return false;
+            }
+            // Knight
+            if (p.toLowerCase() === 'n') {
+                if ((absdr === 2 && absdc === 1) || (absdr === 1 && absdc === 2)) return true;
+                return false;
+            }
+            // Bishop
+            if (p.toLowerCase() === 'b') {
+                if (absdr === absdc && pathClear(fr, fc, tr, tc)) return true;
+                return false;
+            }
+            // Rook
+            if (p.toLowerCase() === 'r') {
+                if ((dr === 0 || dc === 0) && pathClear(fr, fc, tr, tc)) return true;
+                return false;
+            }
+            // Queen
+            if (p.toLowerCase() === 'q') {
+                if (((absdr === absdc) || dr === 0 || dc === 0) && pathClear(fr, fc, tr, tc)) return true;
+                return false;
+            }
+            // King (no castling implemented) - one square any direction
+            if (p.toLowerCase() === 'k') {
+                if (Math.max(absdr, absdc) === 1) return true;
+                return false;
+            }
+            return false;
+        }
+
+        // --- animation move ---
         function animateMove(fr, fc, tr, tc, piece, cb) {
-            const fromRect = document.querySelector(`.cell[data-row='${fr}'][data-col='${fc}']`).getBoundingClientRect(),
-                toRect = document.querySelector(`.cell[data-row='${tr}'][data-col='${tc}']`).getBoundingClientRect(),
-                boardRect = boardElem.getBoundingClientRect();
-            const anim = document.createElement("div");
-            anim.className = "animated-piece";
+            const fromCell = document.querySelector(`.cell[data-row='${fr}'][data-col='${fc}']`);
+            const toCell = document.querySelector(`.cell[data-row='${tr}'][data-col='${tc}']`);
+            const fromRect = fromCell.getBoundingClientRect();
+            const toRect = toCell.getBoundingClientRect();
+            const boardRect = boardElem.getBoundingClientRect();
+            const anim = document.createElement('div');
+            anim.className = 'animated-piece';
             anim.textContent = pieces[piece];
-            anim.style.left = (fromRect.left - boardRect.left) + "px";
-            anim.style.top = (fromRect.top - boardRect.top) + "px";
+            // position relative to board
+            anim.style.left = (fromRect.left - boardRect.left) + 'px';
+            anim.style.top = (fromRect.top - boardRect.top) + 'px';
             animatedLayer.appendChild(anim);
-            anim.offsetWidth;
-            anim.style.transform = `translate(${toRect.left-fromRect.left}px,${toRect.top-fromRect.top}px)`;
-            anim.addEventListener("transitionend", () => {
+            // trigger transition
+            requestAnimationFrame(() => {
+                anim.style.transform = `translate(${toRect.left - fromRect.left}px, ${toRect.top - fromRect.top}px) scale(1.06)`;
+            });
+            anim.addEventListener('transitionend', () => {
                 anim.remove();
                 cb();
             }, {
@@ -319,64 +572,152 @@
             });
         }
 
+        // --- click handler ---
+        function onCellClick(r, c) {
+            const clicked = boardState[r][c];
+            const isWhite = /[PRNBQK]/.test(clicked);
+            const isBlack = /[prnbqk]/.test(clicked);
+            // select
+            if (selected) {
+                const [sr, sc] = selected;
+                const moving = boardState[sr][sc];
+                // if clicked own piece -> change selection
+                if ((currentPlayer === 'white' && /[PRNBQK]/.test(clicked)) || (currentPlayer === 'black' && /[prnbqk]/.test(clicked))) {
+                    selected = [r, c];
+                    refreshUI();
+                    return;
+                }
+                // try move
+                if (isLegalMove(moving, sr, sc, r, c)) {
+                    animateMove(sr, sc, r, c, moving, () => {
+                        // capture tracking
+                        const dest = boardState[r][c];
+                        if (dest && dest !== '.') addCaptured(dest);
+                        boardState[r][c] = moving;
+                        boardState[sr][sc] = '.';
+                        selected = null;
+                        if (soundOn) moveSound.play();
+                        currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+                        appendMoveLog(moving, sr, sc, r, c, dest);
+                        refreshUI();
+                        if (gameMode === 'computer' && currentPlayer === 'black') setTimeout(computerMove, 500);
+                    });
+                } else {
+                    selected = null;
+                    refreshUI();
+                }
+            } else {
+                // select piece only if it's the player's turn
+                if ((currentPlayer === 'white' && /[PRNBQK]/.test(clicked)) || (currentPlayer === 'black' && /[prnbqk]/.test(clicked) && gameMode === 'friendly')) {
+                    selected = [r, c];
+                    refreshUI();
+                }
+            }
+        }
+
+        // --- simple capture UI ---
+        function addCaptured(ch) {
+            const isWhite = /[PRNBQK]/.test(ch);
+            const box = document.createElement('div');
+            box.className = 'cap-piece';
+            box.textContent = pieces[ch];
+            if (isWhite) document.getElementById('capturedWhite').appendChild(box);
+            else document.getElementById('capturedBlack').appendChild(box);
+        }
+
+        // --- move log ---
+        function appendMoveLog(piece, fr, fc, tr, tc, captured) {
+            const log = document.getElementById('moveLog');
+            const row = document.createElement('div');
+            row.className = 'row';
+            const ptext = pieces[piece] || piece;
+            const from = `${String.fromCharCode(97+fc)}${8-fr}`;
+            const to = `${String.fromCharCode(97+tc)}${8-tr}`;
+            row.innerHTML = `<div>${ptext} ${from} → ${to}</div><div>${captured? 'x':'-'}</div>`;
+            log.prepend(row);
+        }
+
+        // --- basic computer: chooses a random legal move ---
         function computerMove() {
-            let moves = [];
+            const moves = [];
             for (let r = 0; r < 8; r++) {
                 for (let c = 0; c < 8; c++) {
                     const p = boardState[r][c];
-                    if (/[prnbqk]/.test(p)) {
-                        let nr = Math.max(0, Math.min(7, r + (Math.floor(Math.random() * 3) - 1))),
-                            nc = Math.max(0, Math.min(7, c + (Math.floor(Math.random() * 3) - 1)));
-                        if (nr !== r || nc !== c) moves.push({
-                            from: [r, c],
-                            to: [nr, nc]
-                        });
-                    }
+                    if (!p || p === '.') continue;
+                    if (!/[prnbqk]/.test(p)) continue; // black pieces only
+                    for (let tr = 0; tr < 8; tr++)
+                        for (let tc = 0; tc < 8; tc++)
+                            if (!(tr === r && tc === c)) {
+                                if (isLegalMove(p, r, c, tr, tc)) moves.push({
+                                    from: [r, c],
+                                    to: [tr, tc],
+                                    p
+                                });
+                            }
                 }
             }
-            if (moves.length) {
-                const m = moves[Math.floor(Math.random() * moves.length)],
-                    fr = m.from[0],
-                    fc = m.from[1],
-                    tr = m.to[0],
-                    tc = m.to[1],
-                    piece = boardState[fr][fc];
-                animateMove(fr, fc, tr, tc, piece, () => {
-                    boardState[tr][tc] = piece;
-                    boardState[fr][fc] = ".";
-                    moveSound.play();
-                    currentPlayer = "white";
-                    renderBoard();
-                });
-            }
-        }
-
-        function newGame() {
-            createBoard();
-            currentPlayer = "white";
-        }
-
-        function flipBoard() {
-            flipped = !flipped;
-            boardElem.style.transform = flipped ? "rotate(180deg)" : "rotate(0deg)";
-        }
-
-        function toggleTheme() {
-            document.body.style.background = document.body.style.background.includes("0f172a") ? "radial-gradient(circle,#111,#000)" : "radial-gradient(circle at center,#0f172a,#000)";
-        }
-
-        document.getElementById("startBtn").onclick = () => {
-            const name = document.getElementById("username").value;
-            if (!name) {
-                alert("Enter your name");
+            if (moves.length === 0) {
+                alert('Computer has no moves');
                 return;
             }
-            gameMode = document.getElementById("modeSelect").value;
-            loginScreen.style.display = "none";
-            gameScreen.style.display = "flex";
-            welcomeUser.textContent = `Welcome, ${name}! (${gameMode==="computer"?"Vs Computer":"Friendly"})`;
-            newGame();
-        };
+            const m = moves[Math.floor(Math.random() * moves.length)];
+            animateMove(m.from[0], m.from[1], m.to[0], m.to[1], m.p, () => {
+                const dest = boardState[m.to[0]][m.to[1]];
+                if (dest && dest !== '.') addCaptured(dest);
+                boardState[m.to[0]][m.to[1]] = m.p;
+                boardState[m.from[0]][m.from[1]] = '.';
+                if (soundOn) moveSound.play();
+                currentPlayer = 'white';
+                appendMoveLog(m.p, m.from[0], m.from[1], m.to[0], m.to[1], dest);
+                refreshUI();
+            });
+        }
+
+        // --- controls ---
+        document.getElementById('newBtn').addEventListener('click', () => {
+            createBoard();
+            document.getElementById('capturedWhite').innerHTML = '';
+            document.getElementById('capturedBlack').innerHTML = '';
+            document.getElementById('moveLog').innerHTML = '';
+            currentPlayer = 'white';
+            selected = null;
+            refreshUI();
+        });
+        document.getElementById('flipBtn').addEventListener('click', () => {
+            flipped = !flipped;
+            boardElem.classList.toggle('flipped', flipped);
+        });
+        document.getElementById('soundBtn').addEventListener('click', () => {
+            soundOn = !soundOn;
+            document.getElementById('soundBtn').querySelector('i').className = soundOn ? 'bx bx-volume-full' : 'bx bx-volume-mute';
+        });
+
+        // --- start button ---
+        document.getElementById('startBtn').addEventListener('click', () => {
+            const name = document.getElementById('username').value.trim();
+            if (!name) {
+                alert('Enter your name');
+                return;
+            }
+            gameMode = document.getElementById('modeSelect').value;
+            loginScreen.style.display = 'none';
+            app.style.display = 'block';
+            document.getElementById('playerName').textContent = name;
+            document.getElementById('playerMode').textContent = gameMode === 'computer' ? 'Vs Computer' : 'Friendly';
+            document.getElementById('avatarTxt').textContent = name.slice(0, 1).toUpperCase();
+            createBoard();
+        });
+
+        // --- small polish: prevent boxicon overlaps by ensuring fixed button size (done in CSS) ---
+
+        // --- initialize board values for internal array ---
+        (function normalizeStart() {
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    if (!startPos[r][c]) startPos[r][c] = '.'
+                }
+            }
+        })();
     </script>
 </body>
 
