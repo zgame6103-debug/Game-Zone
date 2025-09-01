@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login & Registration | CodeHel</title>
+    <title>Login & Registration | Game Zone</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
@@ -277,7 +277,7 @@
     <nav class="navbar">
         <a href="index.html" class="active">Login</a>
         <a href="home.html">Home</a>
-        <a href="About .html">About</a>
+        <a href="About.html">About</a>
         <a href="Contact.html">Contact</a>
     </nav>
 
@@ -348,6 +348,8 @@
         const loginLink = document.querySelector('.login-link');
         const navLinks = document.querySelectorAll('.navbar a');
 
+        let isLoggedIn = false; // user login status
+
         // Toggle forms
         registerLink.addEventListener('click', (e) => {
             e.preventDefault();
@@ -360,9 +362,14 @@
             loginForm.classList.add('active');
         });
 
-        // Navbar active link
+        // Navbar active link + restrict if not logged in
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
+                if (!isLoggedIn && link.getAttribute("href") !== "index.html") {
+                    e.preventDefault();
+                    alert("Please login or sign up to create an account.");
+                    return;
+                }
                 navLinks.forEach(l => l.classList.remove('active'));
                 link.classList.add('active');
             });
@@ -371,15 +378,16 @@
         // Redirect on form submit
         loginForm.querySelector('form').addEventListener('submit', function(e) {
             e.preventDefault();
+            isLoggedIn = true;
             window.location.href = 'home.html';
         });
 
         registerForm.querySelector('form').addEventListener('submit', function(e) {
             e.preventDefault();
+            isLoggedIn = true;
             window.location.href = 'home.html';
         });
     </script>
 </body>
 
 </html>
-
