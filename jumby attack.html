@@ -45,11 +45,13 @@
         
         canvas {
             display: block;
-            margin: 0 auto;
+            margin: 80px auto 0;
             background: rgba(0, 0, 0, 0.2);
             border: 3px solid #0ff;
             border-radius: 15px;
             box-shadow: 0 0 20px #0ff80f, inset 0 0 40px #0ff40f;
+            max-width: 95vw;
+            height: auto;
         }
         /* Score */
         
@@ -74,6 +76,7 @@
             text-shadow: 0 0 20px #ff0066, 0 0 40px #ff3399;
             display: none;
             animation: pulse 1s infinite alternate;
+            text-align: center;
         }
         
         @keyframes pulse {
@@ -100,6 +103,7 @@
             transition: all 0.3s ease;
             text-shadow: 0 0 4px #000;
             box-shadow: 0 0 10px #0ff60f, inset 0 0 5px #00ff88;
+            font-size: 16px;
         }
         
         .restart,
@@ -135,15 +139,59 @@
             left: 20px;
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
+        }
+        /* ---------- Responsive ---------- */
+        
+        @media (max-width: 768px) {
+            .score {
+                font-size: 20px;
+            }
+            .game-over {
+                font-size: 40px;
+            }
+            .restart,
+            .back-btn,
+            .mode-buttons button {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+            .mode-buttons {
+                top: auto;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            canvas {
+                margin-top: 100px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .score {
+                font-size: 18px;
+            }
+            .game-over {
+                font-size: 28px;
+            }
+            .restart,
+            .back-btn,
+            .mode-buttons button {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            canvas {
+                margin-top: 120px;
+            }
         }
     </style>
 </head>
 
 <body>
-    <button class="back-btn" href='game list .html'>Back</button>
+    <button class="back-btn" onclick="window.location.href='game list.html'">Back</button>
     <div class="score">Score: 0</div>
     <div class="game-over">Game Over</div>
-    <button class="restart">Restart</button>
+    <button class="restart" style="display:none;">Restart</button>
     <div class="mode-buttons">
         <button onclick="setMode('easy')">Easy</button>
         <button onclick="setMode('normal')">Normal</button>
@@ -219,7 +267,7 @@
                 spawnJumpParticles();
             }
         });
-        document.addEventListener('touchstart', e => {
+        document.addEventListener('touchstart', () => {
             if (player.grounded) {
                 player.dy = -player.jumpPower;
                 player.grounded = false;
@@ -247,7 +295,7 @@
             if (gameOver) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Player physics
+            // Player
             player.dy += player.gravity;
             player.y += player.dy;
             if (player.y + player.height >= 350) {
@@ -255,15 +303,13 @@
                 player.dy = 0;
                 player.grounded = true;
             }
-
-            // Draw player
             ctx.shadowColor = '#0ff';
             ctx.shadowBlur = 20;
             ctx.fillStyle = player.color;
             ctx.fillRect(player.x, player.y, player.width, player.height);
             ctx.shadowBlur = 0;
 
-            // Draw jumbies
+            // Jumbies
             jumbies.forEach((jumby, i) => {
                 jumby.x -= jumby.speed;
                 jumby.y = 300 + Math.sin(Date.now() / 200) * jumby.bounce * 10;
@@ -281,7 +327,7 @@
                 }
             });
 
-            // Draw particles
+            // Particles
             for (let i = particles.length - 1; i >= 0; i--) {
                 particles[i].update();
                 particles[i].draw();
@@ -321,6 +367,5 @@
         update();
     </script>
 </body>
-
 
 </html>
