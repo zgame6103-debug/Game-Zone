@@ -300,6 +300,79 @@
                 transform: rotate(360deg);
             }
         }
+        /* -------- Responsive Styles -------- */
+        
+        @media (max-width: 992px) {
+            .home {
+                flex-direction: column;
+                text-align: center;
+                gap: 30px;
+                padding: 100px 5% 0;
+            }
+            .home-info h1 {
+                font-size: 40px;
+            }
+            .home-info h2 {
+                font-size: 24px;
+            }
+            .home-img .img-box {
+                width: 50vw;
+                height: 50vw;
+            }
+            .navbar {
+                padding: 20px 5%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar ul {
+                flex-direction: column;
+                position: absolute;
+                top: 70px;
+                left: -100%;
+                background: #1f242d;
+                width: 100%;
+                text-align: center;
+                transition: 0.4s;
+                padding: 20px 0;
+            }
+            .navbar ul li {
+                margin: 15px 0;
+            }
+            .navbar.active ul {
+                left: 0;
+            }
+            .navbar .logo {
+                font-size: 24px;
+            }
+            .home-info h1 {
+                font-size: 32px;
+            }
+            .home-info h2 {
+                font-size: 20px;
+            }
+            .home-img .img-box {
+                width: 70vw;
+                height: 70vw;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .btn {
+                padding: 8px 20px;
+                font-size: 14px;
+            }
+            .home-info p {
+                font-size: 14px;
+            }
+            .home-info .btn-sci {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .home-info .btn-sci .sci {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 
@@ -333,7 +406,7 @@
             </h2>
             <p>And welcome to our page to play all our games.</p>
             <div class="btn-sci">
-                <a href="game list .html" class="btn">Get Games</a>
+                <a href="game list.html" class="btn">Get Games</a>
                 <div class="sci">
                     <a href="https://www.facebook.com/profile.php?id=61579677060070"><i class='bx bxl-facebook'></i></a>
                     <a href="#"><i class='bx bxl-instagram'></i></a>
@@ -350,6 +423,5 @@
         </div>
     </section>
 </body>
-
 
 </html>
