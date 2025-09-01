@@ -39,6 +39,8 @@
             border: 3px solid #fff;
             border-radius: 15px;
             box-shadow: 0px 0px 25px rgba(0, 255, 150, 0.8);
+            max-width: 95vw;
+            max-height: 75vh;
         }
         
         .score {
@@ -66,11 +68,13 @@
             top: 70px;
             right: 30px;
             display: flex;
+            flex-wrap: wrap;
         }
         
         .speed-buttons button {
             padding: 8px 14px;
             margin-left: 8px;
+            margin-top: 5px;
             font-size: 16px;
             cursor: pointer;
             border: none;
@@ -99,6 +103,7 @@
             text-shadow: 0 0 15px #ff0000, 0 0 25px #ff0000;
             animation: popIn 0.6s forwards;
             display: none;
+            text-align: center;
         }
         
         @keyframes popIn {
@@ -109,7 +114,7 @@
         
         .restart {
             position: absolute;
-            top: 60%;
+            top: 65%;
             left: 50%;
             transform: translateX(-50%);
             padding: 12px 25px;
@@ -149,6 +154,58 @@
         .back-btn:hover {
             transform: scale(1.1);
             background: linear-gradient(135deg, #ff0000, #ff4c4c);
+        }
+        /* ---------- Responsive ---------- */
+        
+        @media (max-width: 768px) {
+            .score {
+                font-size: 20px;
+                top: 15px;
+                right: 15px;
+            }
+            .speed-buttons {
+                top: 55px;
+                right: 15px;
+            }
+            .speed-buttons button {
+                font-size: 14px;
+                padding: 6px 10px;
+            }
+            .game-over {
+                font-size: 40px;
+            }
+            .restart {
+                font-size: 18px;
+                padding: 10px 20px;
+            }
+            .back-btn {
+                font-size: 14px;
+                padding: 6px 12px;
+                top: 15px;
+                left: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .score {
+                font-size: 16px;
+            }
+            .speed-buttons {
+                flex-direction: column;
+                right: 10px;
+            }
+            .speed-buttons button {
+                margin: 5px 0;
+                font-size: 12px;
+                padding: 5px 8px;
+            }
+            .game-over {
+                font-size: 28px;
+            }
+            .restart {
+                font-size: 16px;
+                padding: 8px 15px;
+            }
         }
     </style>
 </head>
@@ -243,7 +300,13 @@
             };
             snake.unshift(newHead);
 
-            if (snakeX < 0 || snakeX >= canvas.width || snakeY < 0 || snakeY >= canvas.height || collision(newHead, snake.slice(1))) {
+            if (
+                snakeX < 0 ||
+                snakeX >= canvas.width ||
+                snakeY < 0 ||
+                snakeY >= canvas.height ||
+                collision(newHead, snake.slice(1))
+            ) {
                 clearInterval(game);
                 gameOverEl.style.display = 'block';
                 restartBtn.style.display = 'block';
