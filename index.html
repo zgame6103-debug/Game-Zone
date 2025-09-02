@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login & Registration | Game Zone</title>
+    <title>Game Zone | Login & Registration</title>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
@@ -268,6 +268,30 @@
         .login-register a:hover {
             text-decoration: underline;
         }
+        /* Home Section */
+        
+        .home {
+            display: none;
+            text-align: center;
+            padding: 50px;
+            animation: fadeIn 1s ease forwards;
+        }
+        
+        .home h1 {
+            font-size: 40px;
+            color: #ff0040;
+        }
+        
+        .logout-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #ff0040;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -276,17 +300,17 @@
 
     <nav class="navbar">
         <a href="index.html" class="active">Login</a>
-        <a href="home.html">Home</a>
-        <a href="About.html">About</a>
+        <a href="home.html" class="home-link">Home</a>
+        <a href="About .html">About</a>
         <a href="Contact.html">Contact</a>
     </nav>
 
-    <div class="container">
+    <div class="container auth-box">
         <div class="content">
             <h2 class="logo"><i class='bx bxl-firebase'></i> GameSter</h2>
             <div class="text-sci">
                 <h2>Welcome!<br><span>To our new website.</span></h2>
-                <p>And welcome to our page to play all our games. Login to our page and enjoy.</p>
+                <p>Login to play all our games.</p>
                 <div class="social-icons">
                     <a href="https://www.facebook.com/profile.php?id=61579677060070"><i class='bx bxl-facebook'></i></a>
                 </div>
@@ -294,6 +318,7 @@
         </div>
 
         <div class="logreg-box">
+            <!-- Login Form -->
             <div class="form-box login active">
                 <form>
                     <h2>Sign In</h2>
@@ -314,6 +339,7 @@
                 </form>
             </div>
 
+            <!-- Register Form -->
             <div class="form-box register">
                 <form>
                     <h2>Sign Up</h2>
@@ -341,14 +367,27 @@
         </div>
     </div>
 
+    <!-- Home Section -->
+    <div class="home">
+        <h1>Welcome, <span id="username"></span> 🎮</h1>
+        <p>You are now logged in!
+
+        </p>
+        <button class="logout-btn">Logout</button>
+    </div>
+
     <script>
         const loginForm = document.querySelector('.form-box.login');
         const registerForm = document.querySelector('.form-box.register');
         const registerLink = document.querySelector('.register-link');
         const loginLink = document.querySelector('.login-link');
         const navLinks = document.querySelectorAll('.navbar a');
+        const authBox = document.querySelector('.auth-box');
+        const homeSection = document.querySelector('.home');
+        const usernameSpan = document.getElementById('username');
+        const logoutBtn = document.querySelector('.logout-btn');
 
-        let isLoggedIn = false; // user login status
+        let isLoggedIn = false;
 
         // Toggle forms
         registerLink.addEventListener('click', (e) => {
@@ -362,31 +401,83 @@
             loginForm.classList.add('active');
         });
 
-        // Navbar active link + restrict if not logged in
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                if (!isLoggedIn && link.getAttribute("href") !== "index.html") {
-                    e.preventDefault();
-                    alert("Please login or sign up to create an account.");
-                    return;
-                }
-                navLinks.forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-            });
-        });
+        // Helper: get users from localStorage
+        function getUsers() {
+            let users = localStorage.getItem("users");
+            return users ? JSON.parse(users) : [];
+        }
 
-        // Redirect on form submit
-        loginForm.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            isLoggedIn = true;
-            window.location.href = 'home.html';
-        });
+        function saveUsers(users) {
+            localStorage.setItem("users", JSON.stringify(users));
+        }
 
+        // Sign Up
         registerForm.querySelector('form').addEventListener('submit', function(e) {
             e.preventDefault();
-            isLoggedIn = true;
-            window.location.href = 'home.html';
+            const name = registerForm.querySelector('input[type="text"]').value;
+            const email = registerForm.querySelector('input[type="email"]').value;
+            const password = registerForm.querySelector('input[type="password"]').value;
+
+            let users = getUsers();
+            if (users.some(user => user.email === email)) {
+                alert("This email is already registered!");
+                registerForm.classList.remove('active');
+                loginForm.classList.add('active');
+                return;
+            }
+
+            users.push({
+                name,
+                email,
+                password
+            });
+            saveUsers(users);
+
+            alert("Account created successfully! Now login.");
+            registerForm.classList.remove('active');
+            loginForm.classList.add('active');
         });
+
+        // Login
+        loginForm.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = loginForm.querySelector('input[type="email"]').value;
+            const password = loginForm.querySelector('input[type="password"]').value;
+
+            let users = getUsers();
+            const user = users.find(u => u.email === email && u.password === password);
+
+            if (user) {
+                isLoggedIn = true;
+                localStorage.setItem("loggedInUser", JSON.stringify(user));
+                showHome(user);
+            } else {
+                alert("Wrong email or password!");
+            }
+        });
+
+        // Show home after login
+        function showHome(user) {
+            authBox.style.display = "none";
+            homeSection.style.display = "block";
+            usernameSpan.textContent = user.name;
+        }
+
+        // Logout
+        logoutBtn.addEventListener('click', () => {
+            isLoggedIn = false;
+            localStorage.removeItem("loggedInUser");
+            homeSection.style.display = "none";
+            authBox.style.display = "flex";
+        });
+
+        // Auto login if session exists
+        window.onload = () => {
+            const loggedUser = localStorage.getItem("loggedInUser");
+            if (loggedUser) {
+                showHome(JSON.parse(loggedUser));
+            }
+        }
     </script>
 </body>
 
