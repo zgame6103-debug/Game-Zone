@@ -1,484 +1,218 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Zone | Login & Registration</title>
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        body {
-            background: #000;
-            color: #fff;
-            min-height: 100vh;
-        }
-        
-        .background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: url('1b2f1259-2e20-4d11-90df-d0e2a69d88fa.jpg') no-repeat center/cover;
-            filter: blur(8px) brightness(0.7);
-            z-index: -2;
-        }
-        
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 20px 8%;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            animation: slideDown 1s ease forwards;
-        }
-        
-        @keyframes slideDown {
-            from {
-                transform: translateY(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        
-        .navbar a {
-            position: relative;
-            margin-left: 30px;
-            font-size: 16px;
-            color: #fff;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s, transform 0.3s;
-        }
-        
-        .navbar a::after {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: #ff0040;
-            transition: width 0.4s;
-        }
-        
-        .navbar a:hover::after {
-            width: 100%;
-        }
-        
-        .navbar a:hover {
-            color: #ff0040;
-            transform: scale(1.1);
-        }
-        
-        .navbar a.active {
-            color: #ff0040;
-            font-weight: 600;
-        }
-        
-        .navbar a.active::after {
-            width: 100%;
-        }
-        
-        .container {
-            width: 850px;
-            height: 520px;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 15px;
-            overflow: hidden;
-            display: flex;
-            position: relative;
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.8);
-            animation: fadeIn 1s ease forwards;
-            margin: 120px auto;
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        
-        .content {
-            width: 45%;
-            padding: 50px 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        
-        .logo {
-            font-size: 28px;
-            font-weight: 600;
-        }
-        
-        .text-sci h2 {
-            font-size: 34px;
-            margin-bottom: 15px;
-            animation: slideDown 1s ease forwards;
-        }
-        
-        .text-sci p {
-            animation: fadeUp 1.2s ease forwards;
-        }
-        
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .social-icons a i {
-            font-size: 22px;
-            margin-right: 12px;
-            color: #fff;
-            transition: transform .3s;
-        }
-        
-        .social-icons a i:hover {
-            transform: scale(1.3);
-            color: #ff0040;
-        }
-        
-        .logreg-box {
-            width: 55%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .form-box {
-            position: absolute;
-            width: 80%;
-            transition: all .6s ease;
-            opacity: 0;
-            transform: translateX(100%);
-        }
-        
-        .form-box.active {
-            opacity: 1;
-            transform: translateX(0);
-        }
-        
-        .form-box h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .input-box {
-            position: relative;
-            margin: 25px 0;
-            border-bottom: 2px solid #fff;
-        }
-        
-        .input-box input {
-            width: 100%;
-            padding: 10px;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: #fff;
-            font-size: 16px;
-        }
-        
-        .input-box label {
-            position: absolute;
-            top: 50%;
-            left: 5px;
-            transform: translateY(-50%);
-            color: #ddd;
-            font-size: 14px;
-            transition: .3s;
-        }
-        
-        .input-box input:focus~label,
-        .input-box input:valid~label {
-            top: -5px;
-            font-size: 12px;
-            color: #ff0040;
-        }
-        
-        .input-box .icon {
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #fff;
-        }
-        
-        .btn {
-            width: 100%;
-            padding: 12px;
-            background: #ff0040;
-            border: none;
-            border-radius: 5px;
-            color: #fff;
-            font-weight: 600;
-            cursor: pointer;
-            transition: .3s;
-        }
-        
-        .btn:hover {
-            background: #d60034;
-        }
-        
-        .login-register {
-            margin-top: 15px;
-            text-align: center;
-        }
-        
-        .login-register a {
-            color: #ff0040;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        .login-register a:hover {
-            text-decoration: underline;
-        }
-        /* Home Section */
-        
-        .home {
-            display: none;
-            text-align: center;
-            padding: 50px;
-            animation: fadeIn 1s ease forwards;
-        }
-        
-        .home h1 {
-            font-size: 40px;
-            color: #ff0040;
-        }
-        
-        .logout-btn {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: #ff0040;
-            border: none;
-            border-radius: 5px;
-            color: #fff;
-            font-weight: 600;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Zone | Login & Registration</title>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <style>
+      @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
+      *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+      body{background:#000;color:#fff;min-height:100vh}
+      .background{position:fixed;top:0;left:0;width:100%;height:100vh;
+        background:url('1b2f1259-2e20-4d11-90df-d0e2a69d88fa.jpg') no-repeat center/cover;
+        filter:blur(8px) brightness(0.7);z-index:-2}
+      .navbar{position:fixed;top:0;left:0;width:100%;padding:20px 8%;display:flex;justify-content:flex-end;
+        align-items:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);z-index:1000}
+      .navbar a{position:relative;margin-left:30px;font-size:16px;color:#fff;text-decoration:none;font-weight:500}
+      .navbar a:hover{color:#ff0040}
+      .navbar a.active{color:#ff0040;font-weight:600}
+      .container{width:850px;height:520px;background:rgba(0,0,0,0.6);border-radius:15px;overflow:hidden;display:flex;
+        position:relative;box-shadow:0 0 25px rgba(0,0,0,0.8);margin:120px auto}
+      .content{width:45%;padding:50px 40px;display:flex;flex-direction:column;justify-content:space-between}
+      .logo{font-size:28px;font-weight:600}
+      .text-sci h2{font-size:34px;margin-bottom:15px}
+      .social-icons a i{font-size:22px;margin-right:12px;color:#fff}
+      .logreg-box{width:55%;height:100%;background:rgba(255,255,255,0.08);backdrop-filter:blur(20px);
+        display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+      .form-box{position:absolute;width:80%;transition:all .6s ease;opacity:0;transform:translateX(100%)}
+      .form-box.active{opacity:1;transform:translateX(0)}
+      .form-box h2{text-align:center;margin-bottom:20px}
+      .input-box{position:relative;margin:25px 0;border-bottom:2px solid #fff}
+      .input-box input{width:100%;padding:10px;background:transparent;border:none;outline:none;color:#fff;font-size:16px}
+      .input-box label{position:absolute;top:50%;left:5px;transform:translateY(-50%);color:#ddd;font-size:14px;transition:.3s}
+      .input-box input:focus~label,.input-box input:valid~label{top:-5px;font-size:12px;color:#ff0040}
+      .input-box .icon{position:absolute;right:0;top:50%;transform:translateY(-50%);color:#fff}
+      .btn{width:100%;padding:12px;background:#ff0040;border:none;border-radius:5px;color:#fff;font-weight:600;cursor:pointer}
+      .btn:hover{background:#d60034}
+      .login-register{text-align:center;margin-top:15px}
+      .login-register a{color:#ff0040;text-decoration:none;font-weight:600}
+      .login-register a:hover{text-decoration:underline}
+      .home{display:none;text-align:center;padding:50px}
+      .home h1{font-size:40px;color:#ff0040}
+      .logout-btn{margin-top:20px;padding:10px 20px;background:#ff0040;border:none;border-radius:5px;color:#fff;font-weight:600;cursor:pointer}
+  </style>
 </head>
-
 <body>
-    <div class="background"></div>
+  <div class="background"></div>
 
-    <nav class="navbar">
-        <a href="index.html" class="active">Login</a>
-        <a href="home.html" class="home-link">Home</a>
-        <a href="About .html">About</a>
-        <a href="Contact.html">Contact</a>
-    </nav>
+  <nav class="navbar">
+    <a href="#" class="active">Login</a>
+    <a href="#" class="home-link">Home</a>
+    <a href="#">About</a>
+    <a href="#">Contact</a>
+  </nav>
 
-    <div class="container auth-box">
-        <div class="content">
-            <h2 class="logo"><i class='bx bxl-firebase'></i> GameSter</h2>
-            <div class="text-sci">
-                <h2>Welcome!<br><span>To our new website.</span></h2>
-                <p>Login to play all our games.</p>
-                <div class="social-icons">
-                    <a href="https://www.facebook.com/profile.php?id=61579677060070"><i class='bx bxl-facebook'></i></a>
-                </div>
-            </div>
-        </div>
-
-        <div class="logreg-box">
-            <!-- Login Form -->
-            <div class="form-box login active">
-                <form>
-                    <h2>Sign In</h2>
-                    <div class="input-box">
-                        <span class="icon"><i class="bx bxs-envelope"></i></span>
-                        <input type="email" required>
-                        <label>Email</label>
-                    </div>
-                    <div class="input-box">
-                        <span class="icon"><i class="bx bxs-lock-alt"></i></span>
-                        <input type="password" required>
-                        <label>Password</label>
-                    </div>
-                    <button type="submit" class="btn">Sign In</button>
-                    <div class="login-register">
-                        <p>Don't have an account? <a href="#" class="register-link">Sign Up</a></p>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Register Form -->
-            <div class="form-box register">
-                <form>
-                    <h2>Sign Up</h2>
-                    <div class="input-box">
-                        <span class="icon"><i class="bx bxs-user"></i></span>
-                        <input type="text" required>
-                        <label>Name</label>
-                    </div>
-                    <div class="input-box">
-                        <span class="icon"><i class="bx bxs-envelope"></i></span>
-                        <input type="email" required>
-                        <label>Email</label>
-                    </div>
-                    <div class="input-box">
-                        <span class="icon"><i class="bx bxs-lock-alt"></i></span>
-                        <input type="password" required>
-                        <label>Password</label>
-                    </div>
-                    <button type="submit" class="btn">Sign Up</button>
-                    <div class="login-register">
-                        <p>Already have an account? <a href="#" class="login-link">Sign In</a></p>
-                    </div>
-                </form>
-            </div>
-        </div>
+  <div class="container auth-box">
+    <div class="content">
+      <h2 class="logo"><i class='bx bxl-firebase'></i> GameSter</h2>
+      <div class="text-sci">
+        <h2>Welcome!<br><span>To our new website.</span></h2>
+        <p>Login to play all our games.</p>
+      </div>
     </div>
 
-    <!-- Home Section -->
-    <div class="home">
-        <h1>Welcome, <span id="username"></span> 🎮</h1>
-        <p>You are now logged in!
+    <div class="logreg-box">
+      <!-- Login Form -->
+      <div class="form-box login active">
+        <form id="loginForm">
+          <h2>Sign In</h2>
+          <div class="input-box">
+            <span class="icon"><i class="bx bxs-envelope"></i></span>
+            <input type="email" required>
+            <label>Email</label>
+          </div>
+          <div class="input-box">
+            <span class="icon"><i class="bx bxs-lock-alt"></i></span>
+            <input type="password" required>
+            <label>Password</label>
+          </div>
+          <button type="submit" class="btn">Sign In</button>
+          <div class="login-register">
+            <p>Don't have an account? <a href="#" class="register-link">Sign Up</a></p>
+          </div>
+        </form>
+      </div>
 
-        </p>
-        <button class="logout-btn">Logout</button>
+      <!-- Register Form -->
+      <div class="form-box register">
+        <form id="registerForm">
+          <h2>Sign Up</h2>
+          <div class="input-box">
+            <span class="icon"><i class="bx bxs-user"></i></span>
+            <input type="text" required>
+            <label>Name</label>
+          </div>
+          <div class="input-box">
+            <span class="icon"><i class="bx bxs-envelope"></i></span>
+            <input type="email" required>
+            <label>Email</label>
+          </div>
+          <div class="input-box">
+            <span class="icon"><i class="bx bxs-lock-alt"></i></span>
+            <input type="password" required>
+            <label>Password</label>
+          </div>
+          <button type="submit" class="btn">Sign Up</button>
+          <div class="login-register">
+            <p>Already have an account? <a href="#" class="login-link">Sign In</a></p>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 
-    <script>
-        const loginForm = document.querySelector('.form-box.login');
-        const registerForm = document.querySelector('.form-box.register');
-        const registerLink = document.querySelector('.register-link');
-        const loginLink = document.querySelector('.login-link');
-        const navLinks = document.querySelectorAll('.navbar a');
-        const authBox = document.querySelector('.auth-box');
-        const homeSection = document.querySelector('.home');
-        const usernameSpan = document.getElementById('username');
-        const logoutBtn = document.querySelector('.logout-btn');
+  <!-- Home Section -->
+  <div class="home">
+    <h1>Welcome, <span id="username"></span> 🎮</h1>
+    <p>You are now logged in!</p>
+    <button class="logout-btn">Logout</button>
+  </div>
 
-        let isLoggedIn = false;
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        // Toggle forms
-        registerLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            loginForm.classList.remove('active');
-            registerForm.classList.add('active');
-        });
-        loginLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            registerForm.classList.remove('active');
-            loginForm.classList.add('active');
-        });
+    // ✅ Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDki4FUf7hTllQ0A90BlLN1kHxcR3o7ZvI",
+      authDomain: "game-zone-553f1.firebaseapp.com",
+      projectId: "game-zone-553f1",
+      storageBucket: "game-zone-553f1.appspot.com",
+      messagingSenderId: "196630376825",
+      appId: "1:196630376825:web:7fe459a9b98574d5683fa8",
+      measurementId: "G-GQG064KWHK"
+    };
 
-        // Helper: get users from localStorage
-        function getUsers() {
-            let users = localStorage.getItem("users");
-            return users ? JSON.parse(users) : [];
-        }
+    // ✅ Init Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-        function saveUsers(users) {
-            localStorage.setItem("users", JSON.stringify(users));
-        }
+    // DOM Elements
+    const loginFormBox = document.querySelector('.form-box.login');
+    const registerFormBox = document.querySelector('.form-box.register');
+    const registerLink = document.querySelector('.register-link');
+    const loginLink = document.querySelector('.login-link');
+    const authBox = document.querySelector('.auth-box');
+    const homeSection = document.querySelector('.home');
+    const usernameSpan = document.getElementById('username');
+    const logoutBtn = document.querySelector('.logout-btn');
 
-        // Sign Up
-        registerForm.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = registerForm.querySelector('input[type="text"]').value;
-            const email = registerForm.querySelector('input[type="email"]').value;
-            const password = registerForm.querySelector('input[type="password"]').value;
+    // Toggle forms
+    registerLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      loginFormBox.classList.remove('active');
+      registerFormBox.classList.add('active');
+    });
+    loginLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      registerFormBox.classList.remove('active');
+      loginFormBox.classList.add('active');
+    });
 
-            let users = getUsers();
-            if (users.some(user => user.email === email)) {
-                alert("This email is already registered!");
-                registerForm.classList.remove('active');
-                loginForm.classList.add('active');
-                return;
-            }
+    // Sign Up
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = registerFormBox.querySelector('input[type="text"]').value;
+      const email = registerFormBox.querySelector('input[type="email"]').value;
+      const password = registerFormBox.querySelector('input[type="password"]').value;
 
-            users.push({
-                name,
-                email,
-                password
-            });
-            saveUsers(users);
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(userCredential.user, { displayName: name });
+        alert("Account created successfully! Now login.");
+        registerFormBox.classList.remove('active');
+        loginFormBox.classList.add('active');
+      } catch (error) {
+        alert(error.message);
+      }
+    });
 
-            alert("Account created successfully! Now login.");
-            registerForm.classList.remove('active');
-            loginForm.classList.add('active');
-        });
+    // Login
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = loginFormBox.querySelector('input[type="email"]').value;
+      const password = loginFormBox.querySelector('input[type="password"]').value;
 
-        // Login
-        loginForm.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = loginForm.querySelector('input[type="email"]').value;
-            const password = loginForm.querySelector('input[type="password"]').value;
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        showHome(userCredential.user);
+      } catch (error) {
+        alert("Login failed: " + error.message);
+      }
+    });
 
-            let users = getUsers();
-            const user = users.find(u => u.email === email && u.password === password);
+    // Show Home
+    function showHome(user) {
+      authBox.style.display = "none";
+      homeSection.style.display = "block";
+      usernameSpan.textContent = user.displayName || user.email;
+    }
 
-            if (user) {
-                isLoggedIn = true;
-                localStorage.setItem("loggedInUser", JSON.stringify(user));
-                showHome(user);
-            } else {
-                alert("Wrong email or password!");
-            }
-        });
+    // Logout
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      homeSection.style.display = "none";
+      authBox.style.display = "flex";
+    });
 
-        // Show home after login
-        function showHome(user) {
-            authBox.style.display = "none";
-            homeSection.style.display = "block";
-            usernameSpan.textContent = user.name;
-        }
-
-        // Logout
-        logoutBtn.addEventListener('click', () => {
-            isLoggedIn = false;
-            localStorage.removeItem("loggedInUser");
-            homeSection.style.display = "none";
-            authBox.style.display = "flex";
-        });
-
-        // Auto login if session exists
-        window.onload = () => {
-            const loggedUser = localStorage.getItem("loggedInUser");
-            if (loggedUser) {
-                showHome(JSON.parse(loggedUser));
-            }
-        }
-    </script>
+    // Auto Login
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        showHome(user);
+      }
+    });
+  </script>
 </body>
-
 </html>
