@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +15,7 @@
         filter:blur(8px) brightness(0.7);z-index:-2}
       .navbar{position:fixed;top:0;left:0;width:100%;padding:20px 8%;display:flex;justify-content:flex-end;
         align-items:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);z-index:1000}
-      .navbar a{position:relative;margin-left:30px;font-size:16px;color:#fff;text-decoration:none;font-weight:500}
+      .navbar a{position:relative;margin-left:30px;font-size:16px;color:#fff;text-decoration:none;font-weight:500;cursor:pointer}
       .navbar a:hover{color:#ff0040}
       .navbar a.active{color:#ff0040;font-weight:600}
       .container{width:850px;height:520px;background:rgba(0,0,0,0.6);border-radius:15px;overflow:hidden;display:flex;
@@ -38,24 +39,26 @@
       .login-register{text-align:center;margin-top:15px}
       .login-register a{color:#ff0040;text-decoration:none;font-weight:600}
       .login-register a:hover{text-decoration:underline}
-      .home{display:none;text-align:center;padding:50px}
-      .home h1{font-size:40px;color:#ff0040}
+      section{display:none;padding:100px 50px;text-align:center;min-height:100vh}
+      section h1{font-size:40px;color:#ff0040;margin-bottom:20px}
       .logout-btn{margin-top:20px;padding:10px 20px;background:#ff0040;border:none;border-radius:5px;color:#fff;font-weight:600;cursor:pointer}
   </style>
 </head>
 <body>
   <div class="background"></div>
 
+  <!-- Navbar -->
   <nav class="navbar">
-    <a href="index.html" class="active">Login</a>
-    <a href="home.html" class="home-link">Home</a>
-    <a href="About .html">About</a>
-    <a href="Contact.html">Contact</a>
+    <a href="#" class="active">Login</a>
+    <a href="#" class="home-link">Home</a>
+    <a href="#" class="about-link">About</a>
+    <a href="#" class="contact-link">Contact</a>
   </nav>
 
+  <!-- Auth Box -->
   <div class="container auth-box">
     <div class="content">
-      <h2 class="logo"><i class='bx bxl-firebase'></i> GameSter</h2>
+      <h2 class="logo"><i class='bx bxl-firebase'></i> Game Zone</h2>
       <div class="text-sci">
         <h2>Welcome!<br><span>To our new website.</span></h2>
         <p>Login to play all our games.</p>
@@ -112,19 +115,28 @@
     </div>
   </div>
 
-  <!-- Home Section -->
-  <div class="home">
+  <!-- Sections -->
+  <section class="home">
     <h1>Welcome, <span id="username"></span> 🎮</h1>
     <p>You are now logged in!</p>
     <button class="logout-btn">Logout</button>
-  </div>
+  </section>
+
+  <section class="about">
+    <h1>About Us</h1>
+    <p>This is a demo gaming site with Firebase Authentication.</p>
+  </section>
+
+  <section class="contact">
+    <h1>Contact Us</h1>
+    <p>Email: zgame6103@gmail.com</p>
+  </section>
 
   <!-- Firebase Scripts -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    // ✅ Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyDki4FUf7hTllQ0A90BlLN1kHxcR3o7ZvI",
       authDomain: "game-zone-553f1.firebaseapp.com",
@@ -135,7 +147,6 @@
       measurementId: "G-GQG064KWHK"
     };
 
-    // ✅ Init Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
@@ -146,8 +157,11 @@
     const loginLink = document.querySelector('.login-link');
     const authBox = document.querySelector('.auth-box');
     const homeSection = document.querySelector('.home');
+    const aboutSection = document.querySelector('.about');
+    const contactSection = document.querySelector('.contact');
     const usernameSpan = document.getElementById('username');
     const logoutBtn = document.querySelector('.logout-btn');
+    const navLinks = document.querySelectorAll(".navbar a:not(.active)");
 
     // Toggle forms
     registerLink.addEventListener('click', (e) => {
@@ -159,6 +173,30 @@
       e.preventDefault();
       registerFormBox.classList.remove('active');
       loginFormBox.classList.add('active');
+    });
+
+    // Disable/Enable Links
+    function preventHandler(e) {
+      e.preventDefault();
+      alert("Please login first!");
+    }
+    function disableLinks() {
+      navLinks.forEach(link => link.addEventListener("click", preventHandler));
+    }
+    function enableLinks() {
+      navLinks.forEach(link => link.removeEventListener("click", preventHandler));
+    }
+    disableLinks();
+
+    // Navigation after login
+    navLinks.forEach(link => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        document.querySelectorAll("section").forEach(sec => sec.style.display = "none");
+        if (link.classList.contains("home-link")) homeSection.style.display = "block";
+        if (link.classList.contains("about-link")) aboutSection.style.display = "block";
+        if (link.classList.contains("contact-link")) contactSection.style.display = "block";
+      });
     });
 
     // Sign Up
@@ -196,15 +234,18 @@
     // Show Home
     function showHome(user) {
       authBox.style.display = "none";
+      document.querySelectorAll("section").forEach(sec => sec.style.display = "none");
       homeSection.style.display = "block";
       usernameSpan.textContent = user.displayName || user.email;
+      enableLinks();
     }
 
     // Logout
     logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
-      homeSection.style.display = "none";
+      document.querySelectorAll("section").forEach(sec => sec.style.display = "none");
       authBox.style.display = "flex";
+      disableLinks();
     });
 
     // Auto Login
@@ -216,4 +257,4 @@
   </script>
 </body>
 </html>
-
+```
