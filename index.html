@@ -118,24 +118,7 @@
     </div>
   </div>
 
-  <!-- Sections (shown after login) -->
-  <section class="home">
-    <h1>Welcome, <span id="username"></span> 🎮</h1>
-    <p>You are now logged in!</p>
-    <button class="logout-btn">Logout</button>
-  </section>
-
-  <section class="about">
-    <h1>About Us</h1>
-    <p>This is a demo gaming site (no Firebase) — localStorage based auth for demo only.</p>
-  </section>
-
-  <section class="contact">
-    <h1>Contact Us</h1>
-    <p>Email: zgame6103@gmail.com</p>
-  </section>
-
-  <!-- Removed Firebase: localStorage-based auth implementation -->
+ 
   <script>
     // =======================
     // Simple client-side auth
@@ -260,11 +243,11 @@
 
       const user = findUserByEmail(email);
       if (!user) {
-        alert("ইমেইলটি পাওয়া যায়নি। অনুগ্রহ করে সাইন আপ করুন।");
+        alert("don't have an any account.please, sing up now.");
         return;
       }
       if (user.password !== password) {
-        alert("পাসওয়ার্ড ভুল।");
+        alert("Wrong passowerd");
         return;
       }
 
@@ -305,4 +288,5 @@
   </script>
 </body>
 </html>
+
 
