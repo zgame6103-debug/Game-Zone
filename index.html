@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,6 +41,10 @@
       section{display:none;padding:100px 50px;text-align:center;min-height:100vh}
       section h1{font-size:40px;color:#ff0040;margin-bottom:20px}
       .logout-btn{margin-top:20px;padding:10px 20px;background:#ff0040;border:none;border-radius:5px;color:#fff;font-weight:600;cursor:pointer}
+      @media (max-width:900px){
+        .container{flex-direction:column;width:95%;height:auto;margin:80px auto}
+        .content,.logreg-box{width:100%;padding:30px}
+      }
   </style>
 </head>
 <body>
@@ -49,10 +52,10 @@
 
   <!-- Navbar -->
   <nav class="navbar">
-    <a href="index.html" class="active">Login</a>
-    <a href="home.html" class="home-link">Home</a>
-    <a href="About .html" class="about-link">About</a>
-    <a href="Contact.html" class="contact-link">Contact</a>
+    <a href="#" class="login-link-nav active">Login</a>
+    <a href="#" class="home-link">Home</a>
+    <a href="#" class="about-link">About</a>
+    <a href="#" class="contact-link">Contact</a>
   </nav>
 
   <!-- Auth Box -->
@@ -72,12 +75,12 @@
           <h2>Sign In</h2>
           <div class="input-box">
             <span class="icon"><i class="bx bxs-envelope"></i></span>
-            <input type="email" required>
+            <input type="email" required />
             <label>Email</label>
           </div>
           <div class="input-box">
             <span class="icon"><i class="bx bxs-lock-alt"></i></span>
-            <input type="password" required>
+            <input type="password" required />
             <label>Password</label>
           </div>
           <button type="submit" class="btn">Sign In</button>
@@ -93,17 +96,17 @@
           <h2>Sign Up</h2>
           <div class="input-box">
             <span class="icon"><i class="bx bxs-user"></i></span>
-            <input type="text" required>
+            <input type="text" required />
             <label>Name</label>
           </div>
           <div class="input-box">
             <span class="icon"><i class="bx bxs-envelope"></i></span>
-            <input type="email" required>
+            <input type="email" required />
             <label>Email</label>
           </div>
           <div class="input-box">
             <span class="icon"><i class="bx bxs-lock-alt"></i></span>
-            <input type="password" required>
+            <input type="password" required />
             <label>Password</label>
           </div>
           <button type="submit" class="btn">Sign Up</button>
@@ -115,27 +118,33 @@
     </div>
   </div>
 
- 
+  <!-- Sections (shown after login) -->
+  <section class="home">
+    <h1>Welcome, <span id="username"></span> 🎮</h1>
+    <p>You are now logged in!</p>
+    <button class="logout-btn">Logout</button>
+  </section>
 
-  <!-- Firebase Scripts -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  <section class="about">
+    <h1>About Us</h1>
+    <p>This is a demo gaming site (no Firebase) — localStorage based auth for demo only.</p>
+  </section>
 
-    const firebaseConfig = {
-      apiKey: "",
-      authDomain: "game-zone-553f1.firebaseapp.com",
-      projectId: "game-zone-553f1",
-      storageBucket: "game-zone-553f1.appspot.com",
-      messagingSenderId: "196630376825",
-      appId: "1:196630376825:web:7fe459a9b98574d5683fa8",
-      measurementId: "G-GQG064KWHK"
-    };
+  <section class="contact">
+    <h1>Contact Us</h1>
+    <p>Email: zgame6103@gmail.com</p>
+  </section>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  <!-- Removed Firebase: localStorage-based auth implementation -->
+  <script>
+    // =======================
+    // Simple client-side auth
+    // =======================
+    // DISCLAIMER: This is for demo only. Do NOT use in production.
+    // Users are stored in localStorage as plain JSON: {email, password, name}
+    // =================================================================
 
-    // DOM Elements
+    // Elements
     const loginFormBox = document.querySelector('.form-box.login');
     const registerFormBox = document.querySelector('.form-box.register');
     const registerLink = document.querySelector('.register-link');
@@ -146,7 +155,8 @@
     const contactSection = document.querySelector('.contact');
     const usernameSpan = document.getElementById('username');
     const logoutBtn = document.querySelector('.logout-btn');
-    const navLinks = document.querySelectorAll(".navbar a:not(.active)");
+    // select nav links explicitly
+    const navLinks = document.querySelectorAll('.navbar a.home-link, .navbar a.about-link, .navbar a.contact-link');
 
     // Toggle forms
     registerLink.addEventListener('click', (e) => {
@@ -160,7 +170,7 @@
       loginFormBox.classList.add('active');
     });
 
-    // Disable/Enable Links
+    // Disable/Enable Links before login
     function preventHandler(e) {
       e.preventDefault();
       alert("Please login first!");
@@ -171,7 +181,7 @@
     function enableLinks() {
       navLinks.forEach(link => link.removeEventListener("click", preventHandler));
     }
-    disableLinks();
+    disableLinks(); // initially disable
 
     // Navigation after login
     navLinks.forEach(link => {
@@ -184,65 +194,114 @@
       });
     });
 
-    // Sign Up
-    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+    // --- localStorage helpers ---
+    function getUsers() {
+      try {
+        return JSON.parse(localStorage.getItem('demo_users') || '[]');
+      } catch {
+        return [];
+      }
+    }
+    function saveUsers(users) {
+      localStorage.setItem('demo_users', JSON.stringify(users));
+    }
+    function findUserByEmail(email) {
+      const users = getUsers();
+      return users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    }
+    function saveCurrentUser(user) {
+      localStorage.setItem('demo_current_user', JSON.stringify(user));
+    }
+    function getCurrentUser() {
+      try {
+        return JSON.parse(localStorage.getItem('demo_current_user') || 'null');
+      } catch {
+        return null;
+      }
+    }
+    function clearCurrentUser() {
+      localStorage.removeItem('demo_current_user');
+    }
+
+    // --- Register ---
+    document.getElementById("registerForm").addEventListener("submit", (e) => {
       e.preventDefault();
-      const name = registerFormBox.querySelector('input[type="text"]').value;
-      const email = registerFormBox.querySelector('input[type="email"]').value;
+      const name = registerFormBox.querySelector('input[type="text"]').value.trim();
+      const email = registerFormBox.querySelector('input[type="email"]').value.trim();
       const password = registerFormBox.querySelector('input[type="password"]').value;
 
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        await updateProfile(userCredential.user, { displayName: name });
-        alert("Account created successfully! Now login.");
-        registerFormBox.classList.remove('active');
-        loginFormBox.classList.add('active');
-      } catch (error) {
-        alert(error.message);
+      if (!name || !email || !password) {
+        alert("সব তথ্য পূরণ করুন।");
+        return;
       }
+
+      if (findUserByEmail(email)) {
+        alert("এই ইমেইলে একটি একাউন্ট আগে থেকেই আছে।");
+        return;
+      }
+
+      const users = getUsers();
+      users.push({ name, email, password });
+      saveUsers(users);
+
+      alert("Account created successfully! Now login.");
+      registerFormBox.classList.remove('active');
+      loginFormBox.classList.add('active');
+
+      // clear form
+      registerFormBox.querySelectorAll('input').forEach(i => i.value = '');
     });
 
-    // Login
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    // --- Login ---
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
       e.preventDefault();
-      const email = loginFormBox.querySelector('input[type="email"]').value;
+      const email = loginFormBox.querySelector('input[type="email"]').value.trim();
       const password = loginFormBox.querySelector('input[type="password"]').value;
 
-      try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        showHome(userCredential.user);
-      } catch (error) {
-        alert("Login failed: " + error.message);
+      const user = findUserByEmail(email);
+      if (!user) {
+        alert("ইমেইলটি পাওয়া যায়নি। অনুগ্রহ করে সাইন আপ করুন।");
+        return;
       }
+      if (user.password !== password) {
+        alert("পাসওয়ার্ড ভুল।");
+        return;
+      }
+
+      // সফল লগইন
+      saveCurrentUser(user);
+      showHome(user);
+
+      // clear form fields
+      loginFormBox.querySelectorAll('input').forEach(i => i.value = '');
     });
 
-    // Show Home
+    // --- Show Home ---
     function showHome(user) {
       authBox.style.display = "none";
       document.querySelectorAll("section").forEach(sec => sec.style.display = "none");
       homeSection.style.display = "block";
-      usernameSpan.textContent = user.displayName || user.email;
+      usernameSpan.textContent = user.name || user.email;
       enableLinks();
+      document.querySelector('.login-link-nav').classList.remove('active');
     }
 
-    // Logout
-    logoutBtn.addEventListener("click", async () => {
-      await signOut(auth);
+    // --- Logout ---
+    logoutBtn.addEventListener("click", () => {
+      clearCurrentUser();
       document.querySelectorAll("section").forEach(sec => sec.style.display = "none");
       authBox.style.display = "flex";
       disableLinks();
+      document.querySelector('.login-link-nav').classList.add('active');
     });
 
-    // Auto Login
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        showHome(user);
+    // --- Auto-login on page load ---
+    (function autoLogin() {
+      const cur = getCurrentUser();
+      if (cur) {
+        showHome(cur);
       }
-    });
+    })();
   </script>
 </body>
 </html>
-```
-
-
-
