@@ -52,10 +52,10 @@
 
   <!-- Navbar -->
   <nav class="navbar">
-    <a href="index.html" class="login-link-nav active">Login</a>
-    <a href="home.html" class="home-link">Home</a>
-    <a href="About .html" class="about-link">About</a>
-    <a href="Contact.html" class="contact-link">Contact</a>
+    <a href="#" class="login-link-nav active">Login</a>
+    <a href="#" class="home-link">Home</a>
+    <a href="#" class="about-link">About</a>
+    <a href="#" class="contact-link">Contact</a>
   </nav>
 
   <!-- Auth Box -->
@@ -118,7 +118,24 @@
     </div>
   </div>
 
- 
+  <!-- Sections (shown after login) -->
+  <section class="home">
+    <h1>Welcome, <span id="username"></span> 🎮</h1>
+    <p>You are now logged in!</p>
+    <button class="logout-btn">Logout</button>
+  </section>
+
+  <section class="about">
+    <h1>About Us</h1>
+    <p>This is a demo gaming site (no Firebase) — localStorage based auth for demo only.</p>
+  </section>
+
+  <section class="contact">
+    <h1>Contact Us</h1>
+    <p>Email: zgame6103@gmail.com</p>
+  </section>
+
+  <!-- Removed Firebase: localStorage-based auth implementation -->
   <script>
     // =======================
     // Simple client-side auth
@@ -243,11 +260,11 @@
 
       const user = findUserByEmail(email);
       if (!user) {
-        alert("don't have an any account.please, sing up now.");
+        alert("ইমেইলটি পাওয়া যায়নি। অনুগ্রহ করে সাইন আপ করুন।");
         return;
       }
       if (user.password !== password) {
-        alert("Wrong passowerd");
+        alert("পাসওয়ার্ড ভুল।");
         return;
       }
 
@@ -288,5 +305,3 @@
   </script>
 </body>
 </html>
-
-
